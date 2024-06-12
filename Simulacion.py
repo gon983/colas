@@ -46,8 +46,53 @@ class Simulacion:
         
         
 
+    def fila(self, nombre, tiempo_actual, cantidad_cajeros):
+        v_inicial = [nombre,tiempo_actual, self.llegada_caja.prox_llegada,
+                                    self.llegada_atencion_personalizada.prox_llegada,
+                                    self.llegada_tarjeta_credito.prox_llegada,
+                                    self.llegada_plazo_fijo.prox_llegada,
+                                    self.llegada_prestamos.prox_llegada]
+        
+        for i in range(cantidad_cajeros):
+            x = self.fin_caja.v_prox_fin[i] 
+            v_inicial.append(x)
+        
+        v_final =  [self.fin_atencion_personalizada.v_prox_fin[0],
+                                    self.fin_atencion_personalizada.v_prox_fin[1],
+                                    self.fin_atencion_personalizada.v_prox_fin[2],
+                                    self.fin_tarjeta_credito.v_prox_fin[0],
+                                    self.fin_tarjeta_credito.v_prox_fin[1],
+                                    self.fin_plazo_fijo.v_prox_fin[0],
+                                    self.fin_prestamos.v_prox_fin[0],
+                                    self.fin_prestamos.v_prox_fin[1]]
+        
+        for i in range(cantidad_cajeros):
+            x = self.servidores_caja[i].getEstado()
+            y = self.servidores_caja[i].cola
+            v_final.append(x)
+            v_final.append(y)
+        
+        v_3 = [self.servidores_atencion_personalizada[0].getEstado(),
+                            self.servidores_atencion_personalizada[0].cola,
+                                    self.servidores_atencion_personalizada[1].getEstado(),
+                                    self.servidores_atencion_personalizada[1].cola,
+                                    self.servidores_atencion_personalizada[2].getEstado(),
+                                    self.servidores_atencion_personalizada[2].cola,
+                                    self.servidores_tarjeta_credito[0].getEstado(),
+                                    self.servidores_tarjeta_credito[0].cola,
+                                    self.servidores_tarjeta_credito[1].getEstado(),
+                                    self.servidores_tarjeta_credito[1].cola,
+                                    self.servidores_plazo_fijo[0].getEstado(),
+                                    self.servidores_plazo_fijo[0].cola,
+                                    self.servidores_prestamo[0].getEstado(),
+                                    self.servidores_prestamo[0].cola,
+                                    self.servidores_prestamo[1].getEstado(),
+                                    self.servidores_prestamo[1].cola]
+        
+        v_retornar = v_inicial + v_final + v_3
+        return v_retornar
+
     
-    # Otros métodos de la clase
     
 
 
