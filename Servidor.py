@@ -4,6 +4,14 @@ class Servidor:
         self.estado = estado
         self.cola = cola
     
+
+    def getEstado(self):
+        return self.estado
+    
+    def getCola(self):
+        return self.cola
+    
+
     def setEstadoLibre(self):
         self.estado = 'libre'
 

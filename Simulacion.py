@@ -22,33 +22,35 @@ class Simulacion:
         self.fin_plazo_fijo = None
         self.fin_prestamos = None
 
-        servidores_caja = []
-        servidores_atencion_personalizada = []
-        servidores_tarjeta_credito = []
-        servidores_plazo_fijo = []
-        servidores_prestamo = []
+        self.servidores_caja = []
+        self.servidores_atencion_personalizada = []
+        self.servidores_tarjeta_credito = []
+        self.servidores_plazo_fijo = []
+        self.servidores_prestamo = []
 
         for i in range(cantidad_cajeros):
-            servidores_caja.append(Servidor('libre',0))
+            self.servidores_caja.append(Servidor('libre',0))
         
         for i in range(3):
-            servidores_atencion_personalizada.append(Servidor('libre',0))
+            self.servidores_atencion_personalizada.append(Servidor('libre',0))
 
         for i in range(2):
-            servidores_tarjeta_credito.append(Servidor('libre',0))
+            self.servidores_tarjeta_credito.append(Servidor('libre',0))
 
         for i in range(1):
-            servidores_plazo_fijo.append(Servidor('libre',0))
+            self.servidores_plazo_fijo.append(Servidor('libre',0))
 
-        for i in range(1):
-            servidores_prestamo.append(Servidor('libre',0))
+        for i in range(2):
+            self.servidores_prestamo.append(Servidor('libre',0))
 
+        self.comando_una_fila = None
         
 
     
     # Otros métodos de la clase
     
-    
+
+
     def inicializacion(self, media_caja, media_atencion_personalizada, media_tarjeta_credito, media_plazo_fijo, media_prestamos,
                     cantidad_cajas):
         self.llegada_caja = Llegada(None)
@@ -72,6 +74,10 @@ class Simulacion:
         self.llegada_tarjeta_credito.generar_prox_Llegada(media_tarjeta_credito,0)
         self.llegada_plazo_fijo.generar_prox_Llegada(media_plazo_fijo,0)
         self.llegada_prestamos.generar_prox_Llegada(media_prestamos,0)
+
+
+        def setcomando_una_fila(comando):
+            self.comando_una_fila = comando
 
 
 
@@ -127,7 +133,7 @@ class Simulacion:
 
 
         for i in range(cantidad_cajeros):
-            grilla.heading(f"col{8+i}", text=f"fin caja{i}")
+            grilla.heading(f"col{8+i}", text=f"fin caja{i+1}")
 
         
 
@@ -143,12 +149,12 @@ class Simulacion:
         grilla.heading(f"col{comenzamos+8}", text="fin prestamos 2")
         
         # en los fines primero va el fin de caja
-
+        
         for i in range(0,cantidad_cajeros*2,2 ):
-            grilla.heading(f"col{8+comenzamos+i}", text=f"estado caja{i}")
-            grilla.heading(f"col{8+comenzamos+i+1}", text=f"cola caja{i}")
+            grilla.heading(f"col{9+comenzamos+i}", text=f"estado caja{i}")
+            grilla.heading(f"col{9+comenzamos+i+1}", text=f"cola caja{i}")
 
-        seguimos = 7+ comenzamos + cantidad_cajeros*2 
+        seguimos = 8+ comenzamos + cantidad_cajeros*2 
 
         grilla.heading(f"col{seguimos+1}", text="estado atencion personalizada 1")
 
