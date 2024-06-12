@@ -36,8 +36,8 @@ def llamar_TP():
                 and int(cantidad_lineas_a_mostrar) >= 0 \
                 and int(tiempo_simulacion) >= 0:
             Mensaje_Error("Ingreso satisfactorio", "¡¡Bien Hecho!!", True)
-            tp_tkinter(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
-                       int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(cantidad_lineas_a_mostrar)) # Aca llama al tp_tkinter
+            iniciar_simulacion(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
+                    int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(cantidad_lineas_a_mostrar)) # Aca llama al iniciar_simulacion
             break
         else:
             Mensaje_Error("INGRESO INCORRECTO", "¡¡ERROR!!", False)
@@ -45,7 +45,7 @@ def llamar_TP():
 
 
 raiz = Tk()
-raiz.title("Grupo F - Ejercicio 4 - Montecarlo")
+raiz.title("Grupo F - Ejercicio 4 - Lineas de Espera")
 raiz.geometry("900x600")
 ventana = Frame(raiz)
 ventana.pack()
