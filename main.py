@@ -27,24 +27,52 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
         
              
 
-        simulacion_tupla_inicial = ("inicializacion","0", simulacion.llegada_caja.prox_llegada,
+        # simulacion_tupla_inicial = ("inicializacion","0", simulacion.llegada_caja.prox_llegada,
+        #                             simulacion.llegada_atencion_personalizada.prox_llegada,
+        #                             simulacion.llegada_tarjeta_credito.prox_llegada,
+        #                             simulacion.llegada_plazo_fijo.prox_llegada,
+        #                             simulacion.llegada_prestamos.prox_llegada,
+        #                             simulacion.fin_caja.v_prox_fin[0], # hay que ver como hacer para que se le puedan agregar mas fin_caja segun sea variable la cantidad de cajeros
+        #                             simulacion.fin_atencion_personalizada.v_prox_fin[0],
+        #                             simulacion.fin_atencion_personalizada.v_prox_fin[1],
+        #                             simulacion.fin_atencion_personalizada.v_prox_fin[2],
+        #                             simulacion.fin_tarjeta_credito.v_prox_fin[0],
+        #                             simulacion.fin_tarjeta_credito.v_prox_fin[1],
+        #                             simulacion.fin_plazo_fijo.v_prox_fin,
+        #                             simulacion.fin_prestamos.v_prox_fin[0],
+        #                             simulacion.fin_prestamos.v_prox_fin[1],
+        #                             )
+        
+        simulacion_v_inicial = ["inicializacion","0", simulacion.llegada_caja.prox_llegada,
                                     simulacion.llegada_atencion_personalizada.prox_llegada,
                                     simulacion.llegada_tarjeta_credito.prox_llegada,
                                     simulacion.llegada_plazo_fijo.prox_llegada,
-                                    simulacion.llegada_prestamos.prox_llegada,
-                                    simulacion.fin_caja.v_prox_fin[0], # hay que ver como hacer para que se le puedan agregar mas fin_caja segun sea variable la cantidad de cajeros
-                                    simulacion.fin_atencion_personalizada.v_prox_fin[0],
+                                    simulacion.llegada_prestamos.prox_llegada]
+        
+        simulacion_v_final =  [simulacion.fin_atencion_personalizada.v_prox_fin[0],
                                     simulacion.fin_atencion_personalizada.v_prox_fin[1],
                                     simulacion.fin_atencion_personalizada.v_prox_fin[2],
                                     simulacion.fin_tarjeta_credito.v_prox_fin[0],
                                     simulacion.fin_tarjeta_credito.v_prox_fin[1],
-                                    simulacion.fin_plazo_fijo.v_prox_fin,
+                                    simulacion.fin_plazo_fijo.v_prox_fin[0],
                                     simulacion.fin_prestamos.v_prox_fin[0],
-                                    simulacion.fin_prestamos.v_prox_fin[1],
-                                    )
+                                    simulacion.fin_prestamos.v_prox_fin[1]]
+        
+        tupla_arreglada = crear_tupla_con_nombres(simulacion_v_inicial, cantidad_cajeros, simulacion_v_final)
 
-        simulacion.mostrar_datos(cantidad_cajeros, simulacion_tupla_inicial)
+        simulacion.mostrar_datos(cantidad_cajeros, tupla_arreglada)
 
         
         # simulacion. funciona()
         # simulacion .mostrar()
+
+
+
+def crear_tupla_con_nombres(v_inicial, cantidad_cajeros, v_final):
+    
+    
+    for i in range(cantidad_cajeros):
+        x = 'simulacion.fin_caja.v_prox_fin' + '['+ str(i) +']' 
+        v_inicial.append(x)
+
+    return tuple(v_final + v_final)

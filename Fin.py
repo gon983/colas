@@ -6,6 +6,7 @@ class Fin:
     def __init__(self, cantidad_servidores, rendimiento_medio):
         
         self.v_prox_fin = []
+        self.cantidad_servidores = cantidad_servidores
         self.rendimiento_medio = rendimiento_medio
         for i in range(cantidad_servidores):
             self.v_prox_fin.append(None)
