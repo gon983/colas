@@ -7,11 +7,11 @@ def truncate(number: float, max_decimals: int) -> float:
     return float(".".join((int_part, dec_part[:max_decimals])))
 
 
-def tp_tkinter(pedido, simulacion, reposicion, costo_, precio_, vto_, stock_, recupero_):
-    if simulacion == 0:
+def tp_tkinter(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, tiempo_simulacion, cant_lineas_mostrar):
+    if tiempo_simulacion == 0:
         mostrar_datos([], 0)
     else:
-        tabla = [pedido, simulacion, reposicion, costo_, precio_, vto_, stock_, recupero_]
+        tabla = [caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, tiempo_simulacion, cant_lineas_mostrar]
         print(tabla)
         
 
