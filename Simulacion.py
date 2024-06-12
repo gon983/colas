@@ -1,6 +1,7 @@
 import main
 from Llegada import Llegada 
 from Fin import Fin
+from Servidor import *
 from tkinter import *
 from tkinter import ttk
 
@@ -8,7 +9,7 @@ from tkinter import ttk
 # Definición de la clase
 class Simulacion:
     # El método __init__ es el constructor de la clase
-    def __init__(self):
+    def __init__(self, cantidad_cajeros):
         self.llegada_caja = None
         self.llegada_atencion_personalizada = None
         self.llegada_tarjeta_credito = None
@@ -20,6 +21,27 @@ class Simulacion:
         self.fin_tarjeta_credito = None
         self.fin_plazo_fijo = None
         self.fin_prestamos = None
+
+        servidores_caja = []
+        servidores_atencion_personalizada = []
+        servidores_tarjeta_credito = []
+        servidores_plazo_fijo = []
+        servidores_prestamo = []
+
+        for i in range(cantidad_cajeros):
+            servidores_caja.append(Servidor('libre',0))
+        
+        for i in range(3):
+            servidores_atencion_personalizada.append(Servidor('libre',0))
+
+        for i in range(2):
+            servidores_tarjeta_credito.append(Servidor('libre',0))
+
+        for i in range(1):
+            servidores_plazo_fijo.append(Servidor('libre',0))
+
+        for i in range(1):
+            servidores_prestamo.append(Servidor('libre',0))
 
         
 
@@ -41,6 +63,8 @@ class Simulacion:
         self.fin_plazo_fijo = Fin(1,2)
         self.fin_prestamos = Fin(2,4)
 
+        
+
 
 
         self.llegada_caja.generar_prox_Llegada(media_caja,0)
@@ -59,12 +83,10 @@ class Simulacion:
         ventana = Frame(raiz)
         ventana.pack()
         columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15"]
-        for i in range(cantidad_cajeros):
-            columns.append(f'col{16+i}')
+        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 16)):
+            columns.append(f'col{16+i}')    
 
-        tupla_columna = tuple(columns)
-
-        grilla = ttk.Treeview(ventana, columns=tupla_columna)
+        grilla = ttk.Treeview(ventana, columns=columns)
         barra = ttk.Scrollbar(raiz, orient="vertical", command=grilla.yview)
         barra.pack(side="right", fill="x")
         raiz.resizable(width=False, height=False)
@@ -90,6 +112,9 @@ class Simulacion:
         for i in range(cantidad_cajeros):
             grilla.column(f'col{16+i}', width=150)
 
+        for i in range(cantidad_cajeros*2):
+            grilla.column(f'col{16+cantidad_cajeros+i}', width=150)
+
         # grilla.heading("#0", text="Dias")
         grilla.heading("col1", text="Eventos")
         grilla.heading("col2", text="Reloj(horas)")
@@ -99,9 +124,12 @@ class Simulacion:
         grilla.heading("col6", text="Proxima llegada plazo fijo")
         grilla.heading("col7", text="Proxima llegada prestamos")
         
+
+
         for i in range(cantidad_cajeros):
             grilla.heading(f"col{8+i}", text=f"fin caja{i}")
-            
+
+        
 
         comenzamos = (7 + cantidad_cajeros)
 
@@ -113,6 +141,33 @@ class Simulacion:
         grilla.heading(f"col{comenzamos+6}", text="fin plazo fijo")
         grilla.heading(f"col{comenzamos+7}", text="fin prestamos 1")
         grilla.heading(f"col{comenzamos+8}", text="fin prestamos 2")
+        
+        # en los fines primero va el fin de caja
+
+        for i in range(0,cantidad_cajeros*2,2 ):
+            grilla.heading(f"col{8+comenzamos+i}", text=f"estado caja{i}")
+            grilla.heading(f"col{8+comenzamos+i+1}", text=f"cola caja{i}")
+
+        seguimos = 7+ comenzamos + cantidad_cajeros*2 
+
+        grilla.heading(f"col{seguimos+1}", text="estado atencion personalizada 1")
+
+        grilla.heading(f"col{seguimos+2}", text="cola atencion personalizada 1")
+        grilla.heading(f"col{seguimos+3}", text="estado atencion personalizada 2 ")
+        grilla.heading(f"col{seguimos+4}", text="cola atencion personalizada 2")
+        grilla.heading(f"col{seguimos+5}", text="estado atencion personalizada 3 ")
+        grilla.heading(f"col{seguimos+6}", text="cola atencion personalizada 3")
+
+        grilla.heading(f"col{seguimos+7}", text="estado tarjeta credito 1")
+        grilla.heading(f"col{seguimos+8}", text="cola tarjeta credito 1")
+        grilla.heading(f"col{seguimos+9}", text="estado tarjeta credito 2")
+        grilla.heading(f"col{seguimos+10}", text="cola tarjeta credito 2")
+        grilla.heading(f"col{seguimos+11}", text="estado plazo fijo")
+        grilla.heading(f"col{seguimos+12}", text="cola plazo fijo")
+        grilla.heading(f"col{seguimos+13}", text="estado prestamos 1")
+        grilla.heading(f"col{seguimos+14}", text="cola prestamos 1")
+        grilla.heading(f"col{seguimos+15}", text="estado prestamos 2")
+        grilla.heading(f"col{seguimos+16}", text="cola prestamos 2")
 
 
 

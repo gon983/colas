@@ -20,12 +20,12 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
     else:
         # tiempo_simulacion
         # cant_lineas_mostrar 
-        simulacion = Simulacion()
+        simulacion = Simulacion(cantidad_cajeros)
         simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                                 prestamos_cph, cantidad_cajeros)
         
         
-             
+
 
         # simulacion_tupla_inicial = ("inicializacion","0", simulacion.llegada_caja.prox_llegada,
         #                             simulacion.llegada_atencion_personalizada.prox_llegada,
@@ -58,7 +58,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
                                     simulacion.fin_prestamos.v_prox_fin[0],
                                     simulacion.fin_prestamos.v_prox_fin[1]]
         
-        tupla_arreglada = crear_tupla_con_nombres(simulacion_v_inicial, cantidad_cajeros, simulacion_v_final)
+        tupla_arreglada = crear_tupla_con_nombres(simulacion, simulacion_v_inicial, cantidad_cajeros, simulacion_v_final)
 
         simulacion.mostrar_datos(cantidad_cajeros, tupla_arreglada)
 
@@ -68,11 +68,11 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
 
 
 
-def crear_tupla_con_nombres(v_inicial, cantidad_cajeros, v_final):
+def crear_tupla_con_nombres(simulacion, v_inicial, cantidad_cajeros, v_final):
     
     
     for i in range(cantidad_cajeros):
-        x = 'simulacion.fin_caja.v_prox_fin' + '['+ str(i) +']' 
+        x = exec('simulacion.fin_caja.v_prox_fin' + '['+ str(i) +']') 
         v_inicial.append(x)
 
-    return tuple(v_final + v_final)
+    return tuple(v_inicial + v_final)
