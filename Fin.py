@@ -3,9 +3,10 @@ import Servidor
 # Definición de la clase
 class Fin:
     # El método __init__ es el constructor de la clase
-    def __init__(self, cantidad_servidores):
+    def __init__(self, cantidad_servidores, rendimiento_medio):
         
         self.v_prox_fin = []
+        self.rendimiento_medio = rendimiento_medio
         for i in range(cantidad_servidores):
             self.v_prox_fin.append(None)
         

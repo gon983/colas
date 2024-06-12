@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import random
 import math
-from Simulacion import Simulacion
+from Simulacion import *
 
 def generarNumeroExponencial(media):
         return truncate(-media*math.log(1-random.random()),2)
@@ -23,5 +23,21 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
         simulacion = Simulacion()
         simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                                 prestamos_cph, cantidad_cajeros)
+        
+        simulacion_tupla_inicial = ("inicializacion","0", simulacion.llegada_caja.prox_llegada,
+                                    simulacion.llegada_atencion_personalizada.prox_llegada,
+                                    simulacion.llegada_tarjeta_credito.prox_llegada,
+                                    simulacion.llegada_plazo_fijo.prox_llegada,
+                                    simulacion.llegada_prestamos.prox_llegada,
+                                    simulacion.fin_caja.v_prox_fin,
+                                    simulacion.fin_atencion_personalizada.v_prox_fin,
+                                    simulacion.fin_tarjeta_credito.v_prox_fin,
+                                    simulacion.fin_plazo_fijo.v_prox_fin,
+                                    simulacion.fin_prestamos.v_prox_fin,
+                                    )
+
+        simulacion.mostrar_datos(cantidad_cajeros, simulacion_tupla_inicial)
+
+        
         # simulacion. funciona()
         # simulacion .mostrar()
