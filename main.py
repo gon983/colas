@@ -68,7 +68,8 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
 
         vec_arreglado = crear_vec_con_vectores(simulacion, simulacion_v_inicial, cantidad_cajeros, simulacion_v_final, simulacion_v_3)
 
-        print(vec_arreglado)
+        simulacion.setcomando_una_fila(vec_arreglado)
+        
         simulacion.mostrar_datos(cantidad_cajeros, vec_arreglado)
 
         
