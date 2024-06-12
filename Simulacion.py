@@ -43,7 +43,7 @@ class Simulacion:
         for i in range(2):
             self.servidores_prestamo.append(Servidor('libre',0))
 
-        self.comando_una_fila = None
+        
         
 
     
@@ -76,8 +76,7 @@ class Simulacion:
         self.llegada_prestamos.generar_prox_Llegada(media_prestamos,0)
 
 
-        def setcomando_una_fila(comando):
-            self.comando_una_fila = comando
+      
 
 
 

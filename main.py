@@ -68,8 +68,8 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
 
         vec_arreglado = crear_vec_con_vectores(simulacion, simulacion_v_inicial, cantidad_cajeros, simulacion_v_final, simulacion_v_3)
 
-        simulacion.setcomando_una_fila(vec_arreglado)
-        
+        # simulacion.setcomando_una_fila(vec_arreglado)
+
         simulacion.mostrar_datos(cantidad_cajeros, vec_arreglado)
 
         
@@ -82,14 +82,14 @@ def crear_vec_con_vectores(simulacion, v_inicial, cantidad_cajeros, v_final, v_u
     
     
     for i in range(cantidad_cajeros):
-        x = exec('simulacion.fin_caja.v_prox_fin' + '['+ str(i) +']') 
+        x = simulacion.fin_caja.v_prox_fin[i] 
         v_inicial.append(x)
 
     v_intermedio = v_inicial + v_final
 
     for i in range(cantidad_cajeros):
-        x = exec(f'simulacion.servidores_caja[{i}].getEstado()')
-        y = exec(f'simulacion.servidores_caja[{i}].cola') 
+        x = simulacion.servidores_caja[i].getEstado()
+        y = simulacion.servidores_caja[i].cola
         v_intermedio.append(x)
         v_intermedio.append(y)
     
