@@ -118,7 +118,7 @@ class Simulacion:
 
     
 
-        grilla.insert("", END, text="0", values=tupla_inicial)
+        grilla.insert("", END, values=tupla_inicial)
 
         # while i != len(tabla):
         #     grilla.insert("", END, text=str(tabla[i][0]), values=(tabla[i][1], tabla[i][2], tabla[i][3], tabla[i][4], tabla[i][5], tabla[i][6], tabla[i][7], tabla[i][8], tabla[i][9]))
