@@ -1,1 +1,11 @@
-readME
+La funcion simulacion.fila() instancia todos los valores de la simulacion en su valor actual. LE FALTA AGREGAR LOS CLIENTES
+
+con esta funcion, teniendo el objeto simulacion en memoria quedaria una funcion que sea simulacion.correr() que retorne una tabla.
+
+Esta tabla se haria con 1 una funcion que busque la llegada, fin , mas proximo
+                        2 una funcion que si esta es llegada setee determinados valores y si es fin setee otros con la logica puesta en el excel
+                        3 la funcion simular fila, que iria instanciando cada iteracion entre 1 y 2 dejando un registro en la tabla
+
+La funcion simulacion.mostrardatos() tambien LE FALTA AGREGAR LOS CLIENTES
+
+
