@@ -25,7 +25,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
         
         v_inicial = simulacion.fila("inicializacion","0",cantidad_cajeros )
 
-        simulacion.mostrar_datos(cantidad_cajeros, v_inicial)
+        simulacion.mostrar_datos(cantidad_cajeros, v_inicial, 30)
         
 #         simulacion_v_inicial = ["inicializacion","0", simulacion.llegada_caja.prox_llegada,
 #                                     simulacion.llegada_atencion_personalizada.prox_llegada,

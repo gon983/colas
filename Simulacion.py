@@ -135,7 +135,7 @@ class Simulacion:
 
 
 
-    def mostrar_datos(self,cantidad_cajeros, tupla_inicial):
+    def mostrar_datos(self,cantidad_cajeros, tupla_inicial, max_cli):
         i = 0
         raiz = Tk()
         raiz.title("Grupo F - Ejercicio 4 - Linea de Colas")
@@ -143,7 +143,7 @@ class Simulacion:
         ventana = Frame(raiz)
         ventana.pack()
         columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15"]
-        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 16)):
+        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 16+ max_cli)):
             columns.append(f'col{16+i}')    
 
         grilla = ttk.Treeview(ventana, columns=columns)
@@ -174,6 +174,11 @@ class Simulacion:
 
         for i in range(cantidad_cajeros*2):
             grilla.column(f'col{16+cantidad_cajeros+i}', width=150)
+
+        for i in range(max_cli):
+            grilla.column(f'col{16+cantidad_cajeros+i+cantidad_cajeros*2}', width=150)
+
+        
 
         # grilla.heading("#0", text="Dias")
         grilla.heading("col1", text="Eventos")
@@ -228,6 +233,12 @@ class Simulacion:
         grilla.heading(f"col{seguimos+14}", text="cola prestamos 1")
         grilla.heading(f"col{seguimos+15}", text="estado prestamos 2")
         grilla.heading(f"col{seguimos+16}", text="cola prestamos 2")
+
+        ultimo = seguimos + 16 + 1
+
+        for i in range(max_cli):
+            grilla.heading(f"col{ultimo+i}", text=f"E Cliente{i}")
+
 
 
 
