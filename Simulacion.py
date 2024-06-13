@@ -44,6 +44,9 @@ class Simulacion:
             self.servidores_prestamo.append(Servidor('libre',0))
 
         
+        self.v_clientes =[]
+
+        
         
 
     def fila(self, nombre, tiempo_actual, cantidad_cajeros):
@@ -89,6 +92,13 @@ class Simulacion:
                                     self.servidores_prestamo[1].getEstado(),
                                     self.servidores_prestamo[1].cola]
         
+        if len(self.v_clientes)>0:
+            for i in range(len(self.v_clientes)):
+                v_3.append(self.v_clientes[i].estado) # solo agrega el estado para simplificar en la interfaz
+            
+        
+        
+        
         v_retornar = v_inicial + v_final + v_3
         return v_retornar
 
@@ -121,7 +131,7 @@ class Simulacion:
         self.llegada_prestamos.generar_prox_Llegada(media_prestamos,0)
 
 
-      
+
 
 
 
