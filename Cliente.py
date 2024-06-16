@@ -9,7 +9,6 @@ class Cliente:
         self.estado = 'siendoAtendido'
         self.tiempo_espera = hora_actual - self.tiempo_inicio_espera
 
-
     def setEstadoEnCola(self):
         self.estado = 'enCola'
 

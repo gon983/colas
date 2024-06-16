@@ -4,7 +4,8 @@ import main
 # Definición de la clase
 class Llegada:
     # El método __init__ es el constructor de la clase
-    def __init__(self, prox_llegada):
+    def __init__(self, nombre, prox_llegada):
+        self.nombre = nombre
         self.prox_llegada = prox_llegada
         
     

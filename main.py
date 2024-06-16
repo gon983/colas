@@ -23,9 +23,27 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
         simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                                 prestamos_cph, cantidad_cajeros)
         
-        v_inicial = simulacion.fila("inicializacion","0",cantidad_cajeros )
+        fila_a_mostrar = simulacion.fila("inicializacion","0",cantidad_cajeros )
+        
+        print(fila_a_mostrar)
+        
+        simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,5)
+        
+        for i in range(cant_lineas_mostrar):
+            (proximoEvento, tipoServicio, nroServidor) = simulacion.buscar_proximo_evento()
+            print(proximoEvento)
+        
+            # Si nroServidor es None implica que el siguiente evento es una llegada. Caso contrario es un fin de atencion
+            if nroServidor == None : simulacion.ejecutar_proxima_llegada(proximoEvento, tipoServicio)
+            else: simulacion.ejecutar_proximo_fin(proximoEvento, tipoServicio, nroServidor)
+            fila_a_mostrar = simulacion.fila(proximoEvento.nombre,"0",cantidad_cajeros )
 
-        simulacion.mostrar_datos(cantidad_cajeros, v_inicial, 30)
+        
+        
+        
+        
+        
+        #simulacion.mostrar_datos(cantidad_cajeros, v_inicial, 30)
         
 #         simulacion_v_inicial = ["inicializacion","0", simulacion.llegada_caja.prox_llegada,
 #                                     simulacion.llegada_atencion_personalizada.prox_llegada,

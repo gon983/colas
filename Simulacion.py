@@ -1,6 +1,7 @@
 import main
 from Llegada import Llegada 
 from Fin import Fin
+from Cliente import Cliente
 from Servidor import *
 from tkinter import *
 from tkinter import ttk
@@ -10,164 +11,167 @@ from tkinter import ttk
 class Simulacion:
     # El método __init__ es el constructor de la clase
     def __init__(self, cantidad_cajeros):
-        self.llegada_caja = None
-        self.llegada_atencion_personalizada = None
-        self.llegada_tarjeta_credito = None
-        self.llegada_plazo_fijo = None
-        self.llegada_prestamos = None
-
-        self.fin_caja = None
-        self.fin_atencion_personalizada = None
-        self.fin_tarjeta_credito = None
-        self.fin_plazo_fijo = None
-        self.fin_prestamos = None
-
-        self.servidores_caja = []
-        self.servidores_atencion_personalizada = []
-        self.servidores_tarjeta_credito = []
-        self.servidores_plazo_fijo = []
-        self.servidores_prestamo = []
-
+        
+        self.lista_llegadas = [None, None, None, None, None]
+        self.lista_fines = [None, None, None, None, None]
+        self.lista_servidores =[[],[],[],[],[]]
+        self.v_clientes =[]
+        #cada posicion representa una cola por servicio
+        self.colas = [0, 0, 0, 0, 0]
+        
         for i in range(cantidad_cajeros):
-            self.servidores_caja.append(Servidor('libre',0))
+            self.lista_servidores[0].append(Servidor(i,'libre'))
         
         for i in range(3):
-            self.servidores_atencion_personalizada.append(Servidor('libre',0))
+            self.lista_servidores[1].append(Servidor(i,'libre'))
 
         for i in range(2):
-            self.servidores_tarjeta_credito.append(Servidor('libre',0))
+            self.lista_servidores[2].append(Servidor(i,'libre'))
 
         for i in range(1):
-            self.servidores_plazo_fijo.append(Servidor('libre',0))
+            self.lista_servidores[3].append(Servidor(i,'libre'))
 
         for i in range(2):
-            self.servidores_prestamo.append(Servidor('libre',0))
+            self.lista_servidores[4].append(Servidor(i,'libre'))
 
-        
-        self.v_clientes =[]
-
-        
-        
 
     def fila(self, nombre, tiempo_actual, cantidad_cajeros):
-        v_inicial = [nombre,tiempo_actual, self.llegada_caja.prox_llegada,
-                                    self.llegada_atencion_personalizada.prox_llegada,
-                                    self.llegada_tarjeta_credito.prox_llegada,
-                                    self.llegada_plazo_fijo.prox_llegada,
-                                    self.llegada_prestamos.prox_llegada]
+        v_inicial = [nombre,tiempo_actual, self.lista_llegadas[0].prox_llegada,
+                                    self.lista_llegadas[1].prox_llegada,
+                                    self.lista_llegadas[2].prox_llegada,
+                                    self.lista_llegadas[3].prox_llegada,
+                                    self.lista_llegadas[4].prox_llegada]
         
         for i in range(cantidad_cajeros):
-            x = self.fin_caja.v_prox_fin[i] 
+            x = self.lista_fines[0].v_prox_fin[i] 
             v_inicial.append(x)
         
-        v_final =  [self.fin_atencion_personalizada.v_prox_fin[0],
-                                    self.fin_atencion_personalizada.v_prox_fin[1],
-                                    self.fin_atencion_personalizada.v_prox_fin[2],
-                                    self.fin_tarjeta_credito.v_prox_fin[0],
-                                    self.fin_tarjeta_credito.v_prox_fin[1],
-                                    self.fin_plazo_fijo.v_prox_fin[0],
-                                    self.fin_prestamos.v_prox_fin[0],
-                                    self.fin_prestamos.v_prox_fin[1]]
+        v_final =  [self.lista_fines[1].v_prox_fin[0],
+                                    self.lista_fines[1].v_prox_fin[1],
+                                    self.lista_fines[1].v_prox_fin[2],
+                                    self.lista_fines[2].v_prox_fin[0],
+                                    self.lista_fines[2].v_prox_fin[1],
+                                    self.lista_fines[3].v_prox_fin[0],
+                                    self.lista_fines[4].v_prox_fin[0],
+                                    self.lista_fines[4].v_prox_fin[1]]
         
         for i in range(cantidad_cajeros):
-            x = self.servidores_caja[i].getEstado()
-            y = self.servidores_caja[i].cola
+            x = self.lista_servidores[0][i].getEstado()
             v_final.append(x)
-            v_final.append(y)
-        
-        v_3 = [self.servidores_atencion_personalizada[0].getEstado(),
-                            self.servidores_atencion_personalizada[0].cola,
-                                    self.servidores_atencion_personalizada[1].getEstado(),
-                                    self.servidores_atencion_personalizada[1].cola,
-                                    self.servidores_atencion_personalizada[2].getEstado(),
-                                    self.servidores_atencion_personalizada[2].cola,
-                                    self.servidores_tarjeta_credito[0].getEstado(),
-                                    self.servidores_tarjeta_credito[0].cola,
-                                    self.servidores_tarjeta_credito[1].getEstado(),
-                                    self.servidores_tarjeta_credito[1].cola,
-                                    self.servidores_plazo_fijo[0].getEstado(),
-                                    self.servidores_plazo_fijo[0].cola,
-                                    self.servidores_prestamo[0].getEstado(),
-                                    self.servidores_prestamo[0].cola,
-                                    self.servidores_prestamo[1].getEstado(),
-                                    self.servidores_prestamo[1].cola]
-        
+            
+        #como hay cola unica por servicio saque esto del for.
+        v_final.append(self.colas[0])   
+             
+        v_3 = [ self.lista_servidores[1][0].getEstado(),
+                self.lista_servidores[1][1].getEstado(),
+                self.lista_servidores[1][2].getEstado(),
+                self.colas[1],
+                self.lista_servidores[2][0].getEstado(),
+                self.lista_servidores[2][1].getEstado(),
+                self.colas[2],
+                self.lista_servidores[3][0].getEstado(),
+                self.colas[3],
+                self.lista_servidores[4][0].getEstado(),
+                self.lista_servidores[4][1].getEstado(),
+                self.colas[4]
+            ]
+            
         if len(self.v_clientes)>0:
             for i in range(len(self.v_clientes)):
                 v_3.append(self.v_clientes[i].estado) # solo agrega el estado para simplificar en la interfaz
             
         
-        
-        
         v_retornar = v_inicial + v_final + v_3
         return v_retornar
 
-    
-    
-
-
     def inicializacion(self, media_caja, media_atencion_personalizada, media_tarjeta_credito, media_plazo_fijo, media_prestamos,
                     cantidad_cajas):
-        self.llegada_caja = Llegada(None)
-        self.llegada_atencion_personalizada = Llegada(None)
-        self.llegada_tarjeta_credito = Llegada(None)
-        self.llegada_plazo_fijo = Llegada(None)
-        self.llegada_prestamos = Llegada(None)
-
-        self.fin_caja = Fin(cantidad_cajas,10)
-        self.fin_atencion_personalizada = Fin(3,5)
-        self.fin_tarjeta_credito = Fin(2,3)
-        self.fin_plazo_fijo = Fin(1,2)
-        self.fin_prestamos = Fin(2,4)
-
         
+        nombre_llegada = ""
+        media = 0
+        for i in range(len(self.lista_llegadas)):
+            if i == 0:
+                media = media_caja
+                nombre_llegada = "caja"
+            elif i == 1:
+                media = media_atencion_personalizada
+                nombre_llegada = "atencion_personalizada"
+            elif i == 2:
+                media = media_tarjeta_credito
+                nombre_llegada = "tarjeta_credito"
+            elif i == 3:
+                media = media_plazo_fijo
+                nombre_llegada = "plazo_fijo"
+            elif i == 4:
+                media = media_prestamos
+                nombre_llegada = "prestamos"
+            
+            self.lista_llegadas[i] =  Llegada(nombre_llegada, None)
+            self.lista_llegadas[i].generar_prox_Llegada(media, 0)
+            
+        cant_serv = 0
+        tasa_rendim = ""
+        nombre_fin = ""
+        for i in range(len(self.lista_fines)):
+            if i == 0: 
+                nombre_fin = "caja"
+                cant_serv = cantidad_cajas
+                tasa_rendim = 10
+            elif i == 1: 
+                nombre_fin = "atencion_personalizada"
+                cant_serv = 3
+                tasa_rendim = 5
+            elif i == 2: 
+                nombre_fin = "tarjeta_credito"
+                cant_serv = 2
+                tasa_rendim = 3
+            elif i == 3: 
+                nombre_fin = "plazo_fijo"
+                cant_serv = 1
+                tasa_rendim = 2
+            elif i == 4: 
+                nombre_fin = "prestamos"
+                cant_serv = 2
+                tasa_rendim = 4
+            
+            self.lista_fines[i] =  Fin(nombre_fin, cant_serv, tasa_rendim)
 
-
-
-        self.llegada_caja.generar_prox_Llegada(media_caja,0)
-        self.llegada_atencion_personalizada.generar_prox_Llegada(media_atencion_personalizada,0)
-        self.llegada_tarjeta_credito.generar_prox_Llegada(media_tarjeta_credito,0)
-        self.llegada_plazo_fijo.generar_prox_Llegada(media_plazo_fijo,0)
-        self.llegada_prestamos.generar_prox_Llegada(media_prestamos,0)
-
-
-
-
-
-
-    def mostrar_datos(self,cantidad_cajeros, tupla_inicial, max_cli):
+    def agregar_linea_a_tabla(self,cantidad_cajeros, tupla_inicial, max_cli):
+        pass
+    
+    def generar_tabla(self, cantidad_cajeros, tupla_inicial, max_cli):
         i = 0
         raiz = Tk()
-        raiz.title("Grupo F - Ejercicio 4 - Linea de Colas")
+        raiz.title("Grupo F - TP 4 - Linea de Colas")
+
+        screen_width = raiz.winfo_screenwidth()
+        screen_height = raiz.winfo_screenheight()
+        raiz.geometry(f"{screen_width}x{screen_height}")
 
         ventana = Frame(raiz)
-        ventana.pack()
+        ventana.pack(fill=BOTH, expand=True)
+        
+        
         columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15"]
         for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 16+ max_cli)):
             columns.append(f'col{16+i}')    
 
         grilla = ttk.Treeview(ventana, columns=columns)
-        barra = ttk.Scrollbar(raiz, orient="vertical", command=grilla.yview)
-        barra.pack(side="right", fill="x")
-        raiz.resizable(width=False, height=False)
-        grilla.configure(xscrollcommand = barra.set)
+        
+        # Crear y configurar la barra de desplazamiento vertical
+        
+        scroll_y = Scrollbar(ventana, orient=VERTICAL, command=grilla.yview)
+        scroll_y.pack(side=RIGHT, fill=Y)
+        grilla.configure(yscrollcommand=scroll_y.set)
+
+        # Crear y configurar la barra de desplazamiento horizontal
+        scroll_x = Scrollbar(ventana, orient=HORIZONTAL, command=grilla.xview)
+        scroll_x.pack(side=BOTTOM, fill=X)
+        grilla.configure(xscrollcommand=scroll_x.set)
 
         # grilla.column("#0", width=150)
-        grilla.column("col1", width=150)
-        grilla.column("col2", width=150)
-        grilla.column("col3", width=150)
-        grilla.column("col4", width=150)
-        grilla.column("col5", width=150)
-        grilla.column("col6", width=150)
-        grilla.column("col7", width=150)
-        grilla.column("col8", width=150)
-        grilla.column("col9", width=150)
-        grilla.column("col10", width=150)
-        grilla.column("col11", width=150)
-        grilla.column("col12", width=150)
-        grilla.column("col13", width=150)
-        grilla.column("col14", width=150)
-        grilla.column("col15", width=150)
+        for col in columns:
+            grilla.column(col, width=150)
 
         for i in range(cantidad_cajeros):
             grilla.column(f'col{16+i}', width=150)
@@ -189,79 +193,80 @@ class Simulacion:
         grilla.heading("col6", text="Proxima llegada plazo fijo")
         grilla.heading("col7", text="Proxima llegada prestamos")
         
-
-
         for i in range(cantidad_cajeros):
-            grilla.heading(f"col{8+i}", text=f"fin caja{i+1}")
+            grilla.heading(f"col{8+i}", text=f"fin caja {i+1}")
 
-        
+        cant_encabez_agregados = (7 + cantidad_cajeros) #9
 
-        comenzamos = (7 + cantidad_cajeros)
-
-        grilla.heading(f"col{comenzamos+1}", text="fin atencion personalizada 1")
-        grilla.heading(f"col{comenzamos+2}", text="fin atencion personalizada 2 ")
-        grilla.heading(f"col{comenzamos+3}", text="fin atencion personalizada 3 ")
-        grilla.heading(f"col{comenzamos+4}", text="fin tarjeta credito 1")
-        grilla.heading(f"col{comenzamos+5}", text="fin tarjeta credito 2")
-        grilla.heading(f"col{comenzamos+6}", text="fin plazo fijo")
-        grilla.heading(f"col{comenzamos+7}", text="fin prestamos 1")
-        grilla.heading(f"col{comenzamos+8}", text="fin prestamos 2")
+        grilla.heading(f"col{cant_encabez_agregados+1}", text="fin atencion personalizada 1")
+        grilla.heading(f"col{cant_encabez_agregados+2}", text="fin atencion personalizada 2 ")
+        grilla.heading(f"col{cant_encabez_agregados+3}", text="fin atencion personalizada 3 ")
+        grilla.heading(f"col{cant_encabez_agregados+4}", text="fin tarjeta credito 1")
+        grilla.heading(f"col{cant_encabez_agregados+5}", text="fin tarjeta credito 2")
+        grilla.heading(f"col{cant_encabez_agregados+6}", text="fin plazo fijo")
+        grilla.heading(f"col{cant_encabez_agregados+7}", text="fin prestamos 1")
+        grilla.heading(f"col{cant_encabez_agregados+8}", text="fin prestamos 2")
         
         # en los fines primero va el fin de caja
         
-        for i in range(0,cantidad_cajeros*2,2 ):
-            grilla.heading(f"col{9+comenzamos+i}", text=f"estado caja{i}")
-            grilla.heading(f"col{9+comenzamos+i+1}", text=f"cola caja{i}")
+        for i in range(cantidad_cajeros):
+            grilla.heading(f"col{9+cant_encabez_agregados+i}", text=f"estado caja {i}")
 
-        seguimos = 8+ comenzamos + cantidad_cajeros*2 
+        cant_encabez_agregados = cant_encabez_agregados + 8 + cantidad_cajeros  #20
+        
+        grilla.heading(f"col{cant_encabez_agregados+1}", text="cola caja")
 
-        grilla.heading(f"col{seguimos+1}", text="estado atencion personalizada 1")
+        grilla.heading(f"col{cant_encabez_agregados+2}", text="estado atencion personalizada 1")
+        grilla.heading(f"col{cant_encabez_agregados+3}", text="estado atencion personalizada 2 ")
+        grilla.heading(f"col{cant_encabez_agregados+4}", text="estado atencion personalizada 3 ")
+        grilla.heading(f"col{cant_encabez_agregados+5}", text="cola atencion personalizada")
+        grilla.heading(f"col{cant_encabez_agregados+6}", text="estado tarjeta credito 1")
+        grilla.heading(f"col{cant_encabez_agregados+7}", text="estado tarjeta credito 2")
+        grilla.heading(f"col{cant_encabez_agregados+8}", text="cola tarjeta credito")
+        grilla.heading(f"col{cant_encabez_agregados+9}", text="estado plazo fijo")
+        grilla.heading(f"col{cant_encabez_agregados+10}", text="cola plazo fijo")
+        grilla.heading(f"col{cant_encabez_agregados+11}", text="estado prestamos 1")
+        grilla.heading(f"col{cant_encabez_agregados+12}", text="estado prestamos 2")
+        grilla.heading(f"col{cant_encabez_agregados+13}", text="cola prestamos")
 
-        grilla.heading(f"col{seguimos+2}", text="cola atencion personalizada 1")
-        grilla.heading(f"col{seguimos+3}", text="estado atencion personalizada 2 ")
-        grilla.heading(f"col{seguimos+4}", text="cola atencion personalizada 2")
-        grilla.heading(f"col{seguimos+5}", text="estado atencion personalizada 3 ")
-        grilla.heading(f"col{seguimos+6}", text="cola atencion personalizada 3")
-
-        grilla.heading(f"col{seguimos+7}", text="estado tarjeta credito 1")
-        grilla.heading(f"col{seguimos+8}", text="cola tarjeta credito 1")
-        grilla.heading(f"col{seguimos+9}", text="estado tarjeta credito 2")
-        grilla.heading(f"col{seguimos+10}", text="cola tarjeta credito 2")
-        grilla.heading(f"col{seguimos+11}", text="estado plazo fijo")
-        grilla.heading(f"col{seguimos+12}", text="cola plazo fijo")
-        grilla.heading(f"col{seguimos+13}", text="estado prestamos 1")
-        grilla.heading(f"col{seguimos+14}", text="cola prestamos 1")
-        grilla.heading(f"col{seguimos+15}", text="estado prestamos 2")
-        grilla.heading(f"col{seguimos+16}", text="cola prestamos 2")
-
-        ultimo = seguimos + 16 + 1
+        cant_encabez_agregados = cant_encabez_agregados + 13 + 1
 
         for i in range(max_cli):
-            grilla.heading(f"col{ultimo+i}", text=f"E Cliente{i}")
-
-
-
-
+            grilla.heading(f"col{cant_encabez_agregados+i}", text=f"E Cliente{i}")
     
-
-        grilla.insert("", END, values=tupla_inicial)
-
-        # while i != len(tabla):
-        #     grilla.insert("", END, text=str(tabla[i][0]), values=(tabla[i][1], tabla[i][2], tabla[i][3], tabla[i][4], tabla[i][5], tabla[i][6], tabla[i][7], tabla[i][8], tabla[i][9]))
-        #     i = i + 1
-
-        scroll_y = Scrollbar(ventana, orient = "vertical", command=grilla.yview)
-        scroll_y.pack(side="right", fill="y")
-        grilla.configure(yscrollcommand=scroll_y.set)
-
-        
         
         grilla.pack(fill="both", expand=True)
-        
+        grilla.insert("", END, values=tupla_inicial)
         
         raiz.mainloop()
-        return
+        return grilla
     
+    
+    def buscar_servidor_disponible(self, tipo_servicio):
 
-
+        # accede a la posicion en la lista de servidores que corresponde al tipoo de servicio solicitado
+        # recorre a todos lod servidores de ese servicio y devuelve al primer desocupado
+        for servidor in self.lista_servidores[tipo_servicio]:
+            if servidor.estoyLibre: return (servidor)
+        return(None)
+            
+        return (False, None)
+    
+    def buscar_proximo_evento(self):
+        
+        (tipo_llegada, objeto_prox_lleg) = min(enumerate(self.lista_llegadas), key=lambda llegadaX: llegadaX[1].prox_llegada)
+        #falta buscar el proximo fin y comparar si es menor a la proxima llegada
+        return (objeto_prox_lleg, tipo_llegada, None)
+ 
+    def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
+    
+        servidor = self.buscar_servidor_disponible(tipo_servicio)
+        if servidor:
+            #ver que el segundo parametro tiene q ser el tiempo de llegada
+            nuevo_cliente = Cliente(f"siendoAtendido_{objeto_llegada.nombre}", 0)
+            servidor.setEstadoOcupado()
+        else: 
+            nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", 0)
+            self.colas[tipo_servicio] += 1
+        self.v_clientes.append(nuevo_cliente)
 
