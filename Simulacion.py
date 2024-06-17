@@ -12,13 +12,18 @@ class Simulacion:
     # El método __init__ es el constructor de la clase
     def __init__(self, cantidad_cajeros):
         
+        # simulacion es quien tiene el conocimiento del reloj y de todos los objetos del sistema
+        
         self.reloj = 0
+        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, etc.
         self.lista_llegadas = [None, None, None, None, None]
         self.lista_fines = [None, None, None, None, None]
         self.lista_servidores =[[],[],[],[],[]]
         self.v_clientes =[]
         #cada posicion representa una cola por servicio
         self.colas = [0, 0, 0, 0, 0]
+        
+        # se carga la lista de servidores segun la cantidad de servidores especificados
         
         for i in range(cantidad_cajeros):
             self.lista_servidores[0].append(Servidor(i,'libre'))
@@ -36,25 +41,15 @@ class Simulacion:
             self.lista_servidores[4].append(Servidor(i,'libre'))
 
 
+    # crea una tupla con todos los valores a insertar en una nueva fila de la grilla
     def fila(self, nombre, cantidad_cajeros):
-        v_inicial = [nombre,self.reloj, self.lista_llegadas[0].prox_llegada,
-                                    self.lista_llegadas[1].prox_llegada,
-                                    self.lista_llegadas[2].prox_llegada,
-                                    self.lista_llegadas[3].prox_llegada,
-                                    self.lista_llegadas[4].prox_llegada]
+        v_inicial = [nombre,self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada]
         
         for i in range(cantidad_cajeros):
             x = self.lista_fines[0].v_prox_fin[i] 
             v_inicial.append(x)
         
-        v_final =  [self.lista_fines[1].v_prox_fin[0],
-                                    self.lista_fines[1].v_prox_fin[1],
-                                    self.lista_fines[1].v_prox_fin[2],
-                                    self.lista_fines[2].v_prox_fin[0],
-                                    self.lista_fines[2].v_prox_fin[1],
-                                    self.lista_fines[3].v_prox_fin[0],
-                                    self.lista_fines[4].v_prox_fin[0],
-                                    self.lista_fines[4].v_prox_fin[1]]
+        v_final =  [self.lista_fines[1].v_prox_fin[0], self.lista_fines[1].v_prox_fin[1], self.lista_fines[1].v_prox_fin[2], self.lista_fines[2].v_prox_fin[0], self.lista_fines[2].v_prox_fin[1], self.lista_fines[3].v_prox_fin[0], self.lista_fines[4].v_prox_fin[0], self.lista_fines[4].v_prox_fin[1]]
         
         for i in range(cantidad_cajeros):
             x = self.lista_servidores[0][i].getEstado()
@@ -63,28 +58,16 @@ class Simulacion:
         #como hay cola unica por servicio saque esto del for.
         v_final.append(self.colas[0])   
              
-        v_3 = [ self.lista_servidores[1][0].getEstado(),
-                self.lista_servidores[1][1].getEstado(),
-                self.lista_servidores[1][2].getEstado(),
-                self.colas[1],
-                self.lista_servidores[2][0].getEstado(),
-                self.lista_servidores[2][1].getEstado(),
-                self.colas[2],
-                self.lista_servidores[3][0].getEstado(),
-                self.colas[3],
-                self.lista_servidores[4][0].getEstado(),
-                self.lista_servidores[4][1].getEstado(),
-                self.colas[4]
-            ]
+        v_3 = [ self.lista_servidores[1][0].getEstado(), self.lista_servidores[1][1].getEstado(), self.lista_servidores[1][2].getEstado(), self.colas[1], self.lista_servidores[2][0].getEstado(), self.lista_servidores[2][1].getEstado(), self.colas[2], self.lista_servidores[3][0].getEstado(), self.colas[3], self.lista_servidores[4][0].getEstado(), self.lista_servidores[4][1].getEstado(), self.colas[4] ]
             
         if len(self.v_clientes)>0:
             for i in range(len(self.v_clientes)):
                 v_3.append(self.v_clientes[i].estado) # solo agrega el estado para simplificar en la interfaz
             
-        
         v_retornar = v_inicial + v_final + v_3
         return v_retornar
 
+    # crea todos los objetos que van a ser necesarios para la simulacion y le asigna valores de inicializacion
     def inicializacion(self, media_caja, media_atencion_personalizada, media_tarjeta_credito, media_plazo_fijo, media_prestamos,
                     cantidad_cajas):
         
@@ -136,10 +119,8 @@ class Simulacion:
                 tasa_rendim = 4
             
             self.lista_fines[i] =  Fin(nombre_fin, cant_serv, tasa_rendim)
-
-    def agregar_linea_a_tabla(self,cantidad_cajeros, tupla_inicial, max_cli):
-        pass
     
+    # genera la grilla/tabla, especificando encabezados, scrolls y tamaños
     def generar_tabla(self, cantidad_cajeros, tupla_inicial, max_cli):
         i = 0
         raiz = Tk()
@@ -211,9 +192,11 @@ class Simulacion:
         self.grilla = grilla
         self.raiz = raiz
     
+    # agrega una fila en la grilla con los valores recibidos de fila.
     def agregar_fila (self, fila_A_Agregar):
             self.grilla.insert("", END, values=fila_A_Agregar)
 
+    # retorna el servidor que esta disponible para un determinado tipo de servicio 
     def buscar_servidor_disponible(self, tipo_servicio):
 
         # accede a la posicion en la lista de servidores que corresponde al tipoo de servicio solicitado
@@ -221,7 +204,8 @@ class Simulacion:
         for servidor in self.lista_servidores[tipo_servicio]:
             if servidor.estoyLibre(): return (servidor)
         return(None)
-                
+               
+    # Retorna el evento que sucedera mas proximamente (llegada o fin) junto con el tipo de servicio y numero de servidor que finalizo la atencion. 
     def buscar_proximo_evento(self):
         
         # busca la proxima llegada
@@ -244,47 +228,45 @@ class Simulacion:
         if prox_fin < objeto_prox_lleg.prox_llegada: return (self.lista_fines[tipo_fin], tipo_fin, num_servidor)
         else: return (objeto_prox_lleg, tipo_llegada, -1)
  
+    # ejecuta todas las acciones que deben suceder al haber una llegada.
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
         self.reloj = objeto_llegada.prox_llegada
         servidor = self.buscar_servidor_disponible(tipo_servicio)
       
         if servidor is not None:
+            # si hay un servidor disponible, se crea un cliente con estado Siendo atendido, y se le asigna el servidor que lo atiende.
+            # se establece como ocupado al servidor y se genera un proximo fin de atencion para el mismo.
             nuevo_cliente = Cliente(f"siendoAtendido_{objeto_llegada.nombre}", self.reloj)
             nuevo_cliente.asignar_servidor(servidor)
             servidor.setEstadoOcupado()
             self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
 
         else: 
+            # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
             nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
             self.colas[tipo_servicio] += 1
             
+        # se le asigna al cliente cual fue el tipo de servicio que demando.
         nuevo_cliente.tipo_servicio_demandado = tipo_servicio
         self.v_clientes.append(nuevo_cliente)
         
         objeto_llegada.generar_prox_Llegada(self.reloj)
-        
+    
+    # ejecuta todas las acciones que deben suceder al haber un fin de atencion.
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
-        # eliminar cliente del sistema?
-        # ver si hay alguien en cola
-        # SI HAY ALGUIEN 
-            # calcular proximo fin
-            # set estado del cliente en "siendo atendido"
-            # restar uno a cola
-        # NO HAY ALGUIEN
-            # set prox fin en nulo
-            # set estado a libre
+        
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
 
         if self.colas[tipo_servicio] > 0:
+            # si hay clientes en cola, se genera un proximo fin, se le cambia el estado al cliente y se disminuye en uno la cola
             objeto_fin.generar_prox_fin(self.reloj, nro_servidor)
             for cliente in self.v_clientes:
                 if cliente.tipo_servicio_demandado == tipo_servicio:
                     cliente.setEstadoSiendoAtendido(self.reloj)
             self.colas[tipo_servicio] -= 1
         else:
+            # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
             objeto_fin.v_prox_fin[nro_servidor] = None
             self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre()
-                    
-        
-        pass
+
 

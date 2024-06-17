@@ -10,4 +10,10 @@ estaria bueno agregar una scrollbar horizontal
 
 y despues despues hay q hacer esas consignas q estan tapadas
 
-
+# COSAS QUE FALTAN
+* Ver si se agrega una nueva columna "cliente" por cada cliente que llega 
+* Que la simulacion se haga por tiempo, y que se pueda elegir desde que linea hasta que linea mostrar 
+    * me imagino que una manera de solucionar esto es que por cada evento se sume 1 a un iterador
+    cuando el iterador llegue a la linea_Desde que selecciono el ususario, empiece a generar la tabla. Se van a cargar filas a la tabla hasta alcanzar con el iterador hasta la linea_hasta
+    * es decir, sacaria el "cant_lineas_a_mostrar" y pondria un "linea_Desde" y "linea_hasta"
+* Hacer las consignas :(
