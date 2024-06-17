@@ -35,7 +35,6 @@ def llamar_TP():
                 and int(cantidad_cajeros_cph) > 0 \
                 and int(cantidad_lineas_a_mostrar) >= 0 \
                 and int(tiempo_simulacion) >= 0:
-            Mensaje_Error("Ingreso satisfactorio", "¡¡Bien Hecho!!", True)
             iniciar_simulacion(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
                     int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(cantidad_lineas_a_mostrar)) # Aca llama al iniciar_simulacion
             break

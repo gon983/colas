@@ -17,8 +17,8 @@ class Fin:
     # Otros métodos de la clase
     
     
-    def generar_prox_fin(self, media, horaActual, nroServidor):
-        t_entre_fines = main.generarNumeroExponencial(media)
+    def generar_prox_fin(self, horaActual, nroServidor):
+        t_entre_fines = main.generarNumeroExponencial(self.rendimiento_medio)
         self.v_prox_fin[nroServidor] = main.truncate(horaActual + t_entre_fines, 2)
         
     def buscar_proximo_fin_servidor(self):

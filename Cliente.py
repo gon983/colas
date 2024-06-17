@@ -4,6 +4,8 @@ class Cliente:
         self.estado = estado
         self.tiempo_inicio_espera = tiempo_inicio_espera 
         self.tiempo_espera = None
+        self.servidor_asignado = None
+        self.tipo_servicio_demandado = -1
     
     def setEstadoSiendoAtendido(self, hora_actual):
         self.estado = 'siendoAtendido'
@@ -11,6 +13,9 @@ class Cliente:
 
     def setEstadoEnCola(self):
         self.estado = 'enCola'
+    
+    def asignar_servidor(self, servidor):
+        self.servidor_asignado = servidor
 
     
 

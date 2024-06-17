@@ -15,88 +15,33 @@ def truncate(number: float, max_decimals: int) -> float:
 
 
 def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, tiempo_simulacion, cant_lineas_mostrar):
-    if tiempo_simulacion == 0:
-        print([])
-    else:
-        
-        simulacion = Simulacion(cantidad_cajeros)
-        simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
-                                prestamos_cph, cantidad_cajeros)
-        
-        fila_a_mostrar = simulacion.fila("inicializacion","0",cantidad_cajeros )
-        
-        print(fila_a_mostrar)
-        
-        simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,5)
-        
-        for i in range(cant_lineas_mostrar):
-            (proximoEvento, tipoServicio, nroServidor) = simulacion.buscar_proximo_evento()
-            print(proximoEvento)
-        
-            # Si nroServidor es None implica que el siguiente evento es una llegada. Caso contrario es un fin de atencion
-            if nroServidor == None : simulacion.ejecutar_proxima_llegada(proximoEvento, tipoServicio)
-            else: simulacion.ejecutar_proximo_fin(proximoEvento, tipoServicio, nroServidor)
-            fila_a_mostrar = simulacion.fila(proximoEvento.nombre,"0",cantidad_cajeros )
-
-        
-        
-        
-        
-        
-        #simulacion.mostrar_datos(cantidad_cajeros, v_inicial, 30)
-        
-#         simulacion_v_inicial = ["inicializacion","0", simulacion.llegada_caja.prox_llegada,
-#                                     simulacion.llegada_atencion_personalizada.prox_llegada,
-#                                     simulacion.llegada_tarjeta_credito.prox_llegada,
-#                                     simulacion.llegada_plazo_fijo.prox_llegada,
-#                                     simulacion.llegada_prestamos.prox_llegada]
-        
-#         simulacion_v_final =  [simulacion.fin_atencion_personalizada.v_prox_fin[0],
-#                                     simulacion.fin_atencion_personalizada.v_prox_fin[1],
-#                                     simulacion.fin_atencion_personalizada.v_prox_fin[2],
-#                                     simulacion.fin_tarjeta_credito.v_prox_fin[0],
-#                                     simulacion.fin_tarjeta_credito.v_prox_fin[1],
-#                                     simulacion.fin_plazo_fijo.v_prox_fin[0],
-#                                     simulacion.fin_prestamos.v_prox_fin[0],
-#                                     simulacion.fin_prestamos.v_prox_fin[1]]
-        
-#         simulacion_v_3 = [simulacion.servidores_atencion_personalizada[0].getEstado(),
-#                             simulacion.servidores_atencion_personalizada[0].cola,
-#                                     simulacion.servidores_atencion_personalizada[1].getEstado(),
-#                                     simulacion.servidores_atencion_personalizada[1].cola,
-#                                     simulacion.servidores_atencion_personalizada[2].getEstado(),
-#                                     simulacion.servidores_atencion_personalizada[2].cola,
-#                                     simulacion.servidores_tarjeta_credito[0].getEstado(),
-#                                     simulacion.servidores_tarjeta_credito[0].cola,
-#                                     simulacion.servidores_tarjeta_credito[1].getEstado(),
-#                                     simulacion.servidores_tarjeta_credito[1].cola,
-#                                     simulacion.servidores_plazo_fijo[0].getEstado(),
-#                                     simulacion.servidores_plazo_fijo[0].cola,
-#                                     simulacion.servidores_prestamo[0].getEstado(),
-#                                     simulacion.servidores_prestamo[0].cola,
-#                                     simulacion.servidores_prestamo[1].getEstado(),
-#                                     simulacion.servidores_prestamo[1].cola]
-        
-
-#         vec_arreglado = crear_vec_con_vectores(simulacion, simulacion_v_inicial, cantidad_cajeros, simulacion_v_final, simulacion_v_3)
-
-#         simulacion.mostrar_datos(cantidad_cajeros, vec_arreglado)
-
-# def crear_vec_con_vectores(simulacion, v_inicial, cantidad_cajeros, v_final, v_ultimo):
+    simulacion = Simulacion(cantidad_cajeros)
+    simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
+                            prestamos_cph, cantidad_cajeros)
     
+    fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros )
+            
+    simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,5)
     
-#     for i in range(cantidad_cajeros):
-#         x = simulacion.fin_caja.v_prox_fin[i] 
-#         v_inicial.append(x)
+    def actualizar_filas(i):
+        if i < cant_lineas_mostrar:
+            nombre_evento = ""
+            (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
+            
+            # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
+            if nro_servidor == -1:
+                nombre_evento = "llegada_cliente_"
+                simulacion.ejecutar_proxima_llegada(proximo_evento, tipo_servicio)
+            else:
+                nombre_evento = "fin_atencion_"
+                simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
+            
+            #agrega una fila mas a la grilla
+            fila_a_mostrar = simulacion.fila(nombre_evento+proximo_evento.nombre, cantidad_cajeros)
+            simulacion.agregar_fila(fila_a_mostrar)
+            simulacion.raiz.after(10, actualizar_filas, i + 1) # el primer parametro es cada cuanto se llama la funcion
 
-#     v_intermedio = v_inicial + v_final
+    actualizar_filas(0)
+    simulacion.raiz.mainloop()
 
-#     for i in range(cantidad_cajeros):
-#         x = simulacion.servidores_caja[i].getEstado()
-#         y = simulacion.servidores_caja[i].cola
-#         v_intermedio.append(x)
-#         v_intermedio.append(y)
     
-#     v_retornado = v_intermedio + v_ultimo
-
-#     return v_retornado
