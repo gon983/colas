@@ -14,7 +14,7 @@ def truncate(number: float, max_decimals: int) -> float:
     return float(".".join((int_part, dec_part[:max_decimals])))
 
 
-def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, tiempo_simulacion, linea_desde, linea_hasta):
+def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta):
     simulacion = Simulacion(cantidad_cajeros)
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                             prestamos_cph, cantidad_cajeros)
@@ -22,9 +22,8 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
     fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros )
             
     simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,5)
-    
-    def actualizar_filas(i):
-        if i < linea_hasta:
+    def actualizar_filas(tiempo_actual_simulacion):
+        if tiempo_actual_simulacion <= duracion_simulacion:
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
             
@@ -36,10 +35,16 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
                 nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
                 simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
             
-            #agrega una fila mas a la grilla
+            if simulacion.reloj > duracion_simulacion: return
+
+            # genera una nueva fila de datos
             fila_a_mostrar = simulacion.fila(nombre_evento, cantidad_cajeros)
-            simulacion.agregar_fila(fila_a_mostrar)
-            simulacion.raiz.after(1, actualizar_filas, i + 1) # el primer parametro es cada cuanto se llama la funcion
+            
+            # agrega la fila generada a la grilla si cumple con la linea desde y hasta
+            if linea_desde <= simulacion.cant_eventos_sucedidos <= linea_hasta:
+                simulacion.agregar_fila(fila_a_mostrar)
+                
+            simulacion.raiz.after(0, actualizar_filas, simulacion.reloj) # el primer parametro es cada cuanto se llama la funcion
 
     actualizar_filas(0)
     simulacion.raiz.mainloop()
