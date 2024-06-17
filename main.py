@@ -30,16 +30,16 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
             if nro_servidor == -1:
-                nombre_evento = "llegada_cliente_"
+                nombre_evento = "llegada_cliente_" + proximo_evento.nombre
                 simulacion.ejecutar_proxima_llegada(proximo_evento, tipo_servicio)
             else:
-                nombre_evento = "fin_atencion_"
+                nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
                 simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
             
             #agrega una fila mas a la grilla
-            fila_a_mostrar = simulacion.fila(nombre_evento+proximo_evento.nombre, cantidad_cajeros)
+            fila_a_mostrar = simulacion.fila(nombre_evento, cantidad_cajeros)
             simulacion.agregar_fila(fila_a_mostrar)
-            simulacion.raiz.after(10, actualizar_filas, i + 1) # el primer parametro es cada cuanto se llama la funcion
+            simulacion.raiz.after(1, actualizar_filas, i + 1) # el primer parametro es cada cuanto se llama la funcion
 
     actualizar_filas(0)
     simulacion.raiz.mainloop()

@@ -13,7 +13,7 @@ class Simulacion:
     def __init__(self, cantidad_cajeros):
         
         # simulacion es quien tiene el conocimiento del reloj y de todos los objetos del sistema
-        
+        self.cant_eventos_sucedidos = 0
         self.reloj = 0
         # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, etc.
         self.lista_llegadas = [None, None, None, None, None]
@@ -43,7 +43,7 @@ class Simulacion:
 
     # crea una tupla con todos los valores a insertar en una nueva fila de la grilla
     def fila(self, nombre, cantidad_cajeros):
-        v_inicial = [nombre,self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada]
+        v_inicial = [self.cant_eventos_sucedidos, nombre, self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada]
         
         for i in range(cantidad_cajeros):
             x = self.lista_fines[0].v_prox_fin[i] 
@@ -125,20 +125,16 @@ class Simulacion:
         i = 0
         raiz = Tk()
         raiz.title("Grupo F - TP 4 - Linea de Colas")
-
-        screen_width = raiz.winfo_screenwidth()
-        screen_height = raiz.winfo_screenheight() -100
-        raiz.geometry(f"{screen_width}x{screen_height}")
+        raiz.state('zoomed')  # Esta línea maximiza la ventana
 
         ventana = Frame(raiz)
         ventana.pack(fill=BOTH, expand=True)
         
-        
-        columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15"]
-        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 16+ max_cli)):
-            columns.append(f'col{16+i}')    
+        columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15", "col16"]
+        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 17+ max_cli)):
+            columns.append(f'col{17+i}')    
 
-        grilla = ttk.Treeview(ventana, columns=columns)
+        grilla = ttk.Treeview(ventana, columns=columns, show="headings")
         
         # Crear y configurar la barra de desplazamiento vertical
         
@@ -151,14 +147,14 @@ class Simulacion:
         scroll_x.pack(side=BOTTOM, fill=X)
         grilla.configure(xscrollcommand=scroll_x.set)
 
-        
         # Configurar las columnas de la grilla
         for col in columns:
-            grilla.column(col, width=150)
+            if col == "col2":  grilla.column(col, width=150)
+            else: grilla.column(col, width=100)
 
         # Configurar encabezados de las columnas
         encabezados = [
-            "Eventos", "Reloj(horas)", "Proxima llegada caja", "Proxima at personalizada",
+            "Nro Evento", "Evento", "Reloj(horas)", "Proxima llegada caja", "Proxima at personalizada",
             "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos"
         ]
         for i in range(cantidad_cajeros):
@@ -184,7 +180,6 @@ class Simulacion:
 
         for col, encabezado in zip(columns, encabezados):
             grilla.heading(col, text=encabezado)
-
         
         grilla.pack(fill="both", expand=True)
         grilla.insert("", END, values=tupla_inicial)
@@ -193,8 +188,9 @@ class Simulacion:
         self.raiz = raiz
     
     # agrega una fila en la grilla con los valores recibidos de fila.
-    def agregar_fila (self, fila_A_Agregar):
-            self.grilla.insert("", END, values=fila_A_Agregar)
+    def agregar_fila (self, fila_a_agregar):
+            fila_a_agregar = tuple("-" if x is None else x for x in fila_a_agregar)
+            self.grilla.insert("", END, values=fila_a_agregar)
 
     # retorna el servidor que esta disponible para un determinado tipo de servicio 
     def buscar_servidor_disponible(self, tipo_servicio):
@@ -231,6 +227,8 @@ class Simulacion:
     # ejecuta todas las acciones que deben suceder al haber una llegada.
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
         self.reloj = objeto_llegada.prox_llegada
+        self.cant_eventos_sucedidos += 1
+
         servidor = self.buscar_servidor_disponible(tipo_servicio)
       
         if servidor is not None:
@@ -254,7 +252,7 @@ class Simulacion:
     
     # ejecuta todas las acciones que deben suceder al haber un fin de atencion.
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
-        
+        self.cant_eventos_sucedidos += 1
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
 
         if self.colas[tipo_servicio] > 0:

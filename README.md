@@ -17,3 +17,4 @@ y despues despues hay q hacer esas consignas q estan tapadas
     cuando el iterador llegue a la linea_Desde que selecciono el ususario, empiece a generar la tabla. Se van a cargar filas a la tabla hasta alcanzar con el iterador hasta la linea_hasta
     * es decir, sacaria el "cant_lineas_a_mostrar" y pondria un "linea_Desde" y "linea_hasta"
 * Hacer las consignas :(
+* Ver como hacer para optimizar los tiempos ya que la carga de datos es muy lenta
