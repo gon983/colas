@@ -24,7 +24,8 @@ def llamar_TP():
     plazo_fijo_cph = cuadroplazo_fijo_cph.get()
     prestamos_cph = cuadroprestamos_cph.get()
     cantidad_cajeros_cph = cuadrocantidad_cajeros_cph.get()
-    cantidad_lineas_a_mostrar = cuadrocantidad_lineas_a_mostrar.get()
+    linea_desde = cuadrolinea_desde.get()
+    linea_hasta = cuadrolinea_hasta.get()
     tiempo_simulacion = cuadrotiempo_simulacion.get()
     while True:
         if int(caja_cph) >= 0 \
@@ -33,10 +34,11 @@ def llamar_TP():
                 and int(plazo_fijo_cph) >= 0 \
                 and int(prestamos_cph) >= 0 \
                 and int(cantidad_cajeros_cph) > 0 \
-                and int(cantidad_lineas_a_mostrar) >= 0 \
+                and int(linea_desde) >= 0 \
+                and int(linea_hasta) >= 0 \
                 and int(tiempo_simulacion) >= 0:
             iniciar_simulacion(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
-                    int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(cantidad_lineas_a_mostrar)) # Aca llama al iniciar_simulacion
+                    int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(linea_desde), int(linea_hasta)) # Aca llama al iniciar_simulacion
             break
         else:
             Mensaje_Error("INGRESO INCORRECTO", "¡¡ERROR!!", False)
@@ -88,13 +90,18 @@ nombretiempo_simulacion.grid(row=7, column=0, sticky="e")
 cuadrotiempo_simulacion=Entry(ventana, font=("Arial bold", 13))
 cuadrotiempo_simulacion.grid(row=7, column=1)
 
-nombrecantidad_lineas_a_mostrar=Label(ventana, text="Cantidad de lineas a mostrar:", font=("Arial bold", 13), background=back, anchor='e')
-nombrecantidad_lineas_a_mostrar.grid(row=8, column=0, sticky="e")
-cuadrocantidad_lineas_a_mostrar=Entry(ventana, font=("Arial bold", 13))
-cuadrocantidad_lineas_a_mostrar.grid(row=8,column=1)
+nombrelinea_desde=Label(ventana, text="Linea de inicio impresion:", font=("Arial bold", 13), background=back, anchor='e')
+nombrelinea_desde.grid(row=8, column=0, sticky="e")
+cuadrolinea_desde=Entry(ventana, font=("Arial bold", 13))
+cuadrolinea_desde.grid(row=8,column=1)
+
+nombrelinea_hasta=Label(ventana, text="Linea de fin de impresion:", font=("Arial bold", 13), background=back, anchor='e')
+nombrelinea_hasta.grid(row=9, column=0, sticky="e")
+cuadrolinea_hasta=Entry(ventana, font=("Arial bold", 13))
+cuadrolinea_hasta.grid(row=9,column=1)
 
 boton = Button(ventana, text="Aceptar", font=6, command=llamar_TP, width=8, background="#F5DA81")
-boton.grid(row=9, column=1)
+boton.grid(row=10, column=1)
 
 
 raiz.mainloop()

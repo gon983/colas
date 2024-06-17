@@ -14,7 +14,7 @@ def truncate(number: float, max_decimals: int) -> float:
     return float(".".join((int_part, dec_part[:max_decimals])))
 
 
-def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, tiempo_simulacion, cant_lineas_mostrar):
+def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, tiempo_simulacion, linea_desde, linea_hasta):
     simulacion = Simulacion(cantidad_cajeros)
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                             prestamos_cph, cantidad_cajeros)
@@ -24,7 +24,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
     simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,5)
     
     def actualizar_filas(i):
-        if i < cant_lineas_mostrar:
+        if i < linea_hasta:
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
             
