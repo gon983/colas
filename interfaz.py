@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from main import *
 
-
+#
 def Mensaje_Error(mensaje, titulo, resultado):
     raiz2 = Tk()
     raiz2.title(titulo)
