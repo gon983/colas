@@ -21,11 +21,25 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
     
     fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros )
             
-    simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,5)
+    simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,20)
     def actualizar_filas(tiempo_actual_simulacion):
         if tiempo_actual_simulacion <= duracion_simulacion:
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
+
+            # para acumular los tiempos de ocio para estadisticas
+            simulacion.acumular_ocio(tiempo_actual_simulacion)
+            for i in range(len(simulacion.lista_servidores)):
+                acum_aux = 0
+                for j in range(len(simulacion.lista_servidores[i])):
+                    acum_aux = simulacion.lista_servidores[i][j].get_tiempo_ocio()
+                simulacion.v_acumuladores[i].acumular_ocio(acum_aux)
+
+
+            
+                
+
+            
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
             if nro_servidor == -1:

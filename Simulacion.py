@@ -67,6 +67,7 @@ class Simulacion:
         for i in range(len(self.v_acumuladores)):    
             v_3.append(self.v_acumuladores[i].get_tiempo_espera())
             v_3.append(self.v_acumuladores[i].get_cantidad_clientes_esperaron())
+            v_3.append(self.v_acumuladores[i].get_tiempo_ocio())
 
         if len(self.v_clientes)>0:
             for i in range(len(self.v_clientes)):
@@ -133,26 +134,32 @@ class Simulacion:
             if i == 0:
             
                 nombre_servicio = "caja"
+                pos = 0
             elif i == 1:
                 
                 nombre_servicio = "atencion_personalizada"
+                pos= 1
+
             elif i == 2:
                 
                 nombre_servicio = "tarjeta_credito"
+                pos = 2
             elif i == 3:
                 
                 nombre_servicio = "plazo_fijo"
+                pos=3
             elif i == 4:
                 
                 nombre_llegada = "prestamos"
+                pos=4
 
-            self.v_acumuladores[i] = Acumulador(nombre_servicio)
+            self.v_acumuladores[i] = Acumulador(nombre_servicio, pos)
         
             
 
     
     # genera la grilla/tabla, especificando encabezados, scrolls y tamaños
-    def generar_tabla(self, cantidad_cajeros, tupla_inicial, max_cli):
+    def generar_tabla(self, cantidad_cajeros, tupla_inicial, max_cli): #max cli indica cuantas columnas podemos tener
         i = 0
         raiz = Tk()
         raiz.title("Grupo F - TP 4 - Linea de Colas")
@@ -208,15 +215,15 @@ class Simulacion:
 
         for i in range(len(self.v_acumuladores)):
             if i == 0: # caja
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(), 'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(), 'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 1: # at pers
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 2: # tarj credito
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 3: # plazo fijo
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 4: # prestamos
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
 
         for i in range(max_cli):
             encabezados.append(f"E Cliente{i}")
@@ -262,18 +269,18 @@ class Simulacion:
                         prox_fin = valor
                         tipo_fin = i
                         num_servidor = j
-              
+            
         # busca cual es mas proximo, si la llegada o el fin      
         if prox_fin < objeto_prox_lleg.prox_llegada: return (self.lista_fines[tipo_fin], tipo_fin, num_servidor)
         else: return (objeto_prox_lleg, tipo_llegada, -1)
- 
+
     # ejecuta todas las acciones que deben suceder al haber una llegada.
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
         self.reloj = objeto_llegada.prox_llegada
         self.cant_eventos_sucedidos += 1
 
         servidor = self.buscar_servidor_disponible(tipo_servicio)
-      
+    
         if servidor is not None:
             # si hay un servidor disponible, se crea un cliente con estado Siendo atendido, y se le asigna el servidor que lo atiende.
             # se establece como ocupado al servidor y se genera un proximo fin de atencion para el mismo.
@@ -296,6 +303,7 @@ class Simulacion:
     # ejecuta todas las acciones que deben suceder al haber un fin de atencion.
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
         self.cant_eventos_sucedidos += 1
+        
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
 
         if self.colas[tipo_servicio] > 0:
@@ -312,6 +320,12 @@ class Simulacion:
             # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
             objeto_fin.v_prox_fin[nro_servidor] = None
             self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre()
+
+    def acumular_ocio(self, tiempo_pasado): 
+        for i in range(len(self.lista_servidores)):
+            for servidor in self.lista_servidores[i]:
+                if not(servidor.estoyOcupado()):
+                    servidor.acumular_ocio(tiempo_pasado)
 
     
 
