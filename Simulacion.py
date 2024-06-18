@@ -2,6 +2,7 @@ import main
 from Llegada import Llegada 
 from Fin import Fin
 from Cliente import Cliente
+from Acumulador import Acumulador
 from Servidor import *
 from tkinter import *
 from tkinter import ttk
@@ -15,13 +16,16 @@ class Simulacion:
         # simulacion es quien tiene el conocimiento del reloj y de todos los objetos del sistema
         self.cant_eventos_sucedidos = 0
         self.reloj = 0
-        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, etc.
+        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, 2 tarjetas de credito, 3 plazo fijo, 4 prestamo.
         self.lista_llegadas = [None, None, None, None, None]
         self.lista_fines = [None, None, None, None, None]
         self.lista_servidores =[[],[],[],[],[]]
         self.v_clientes =[]
         #cada posicion representa una cola por servicio
         self.colas = [0, 0, 0, 0, 0]
+
+        # 1 acumulador por servicio 
+        self.v_acumuladores = [None,None,None,None,None]
         
         # se carga la lista de servidores segun la cantidad de servidores especificados
         
@@ -57,14 +61,19 @@ class Simulacion:
             
         #como hay cola unica por servicio saque esto del for.
         v_final.append(self.colas[0])   
-             
-        v_3 = [ self.lista_servidores[1][0].getEstado(), self.lista_servidores[1][1].getEstado(), self.lista_servidores[1][2].getEstado(), self.colas[1], self.lista_servidores[2][0].getEstado(), self.lista_servidores[2][1].getEstado(), self.colas[2], self.lista_servidores[3][0].getEstado(), self.colas[3], self.lista_servidores[4][0].getEstado(), self.lista_servidores[4][1].getEstado(), self.colas[4] ]
             
+        v_3 = [ self.lista_servidores[1][0].getEstado(), self.lista_servidores[1][1].getEstado(), self.lista_servidores[1][2].getEstado(), self.colas[1], self.lista_servidores[2][0].getEstado(), self.lista_servidores[2][1].getEstado(), self.colas[2], self.lista_servidores[3][0].getEstado(), self.colas[3], self.lista_servidores[4][0].getEstado(), self.lista_servidores[4][1].getEstado(), self.colas[4] ]
+
+        for i in range(len(self.v_acumuladores)):    
+            v_3.append(self.v_acumuladores[i].get_tiempo_espera())
+            v_3.append(self.v_acumuladores[i].get_cantidad_clientes_esperaron())
+
         if len(self.v_clientes)>0:
             for i in range(len(self.v_clientes)):
                 v_3.append(self.v_clientes[i].estado) # solo agrega el estado para simplificar en la interfaz
             
         v_retornar = v_inicial + v_final + v_3
+
         return v_retornar
 
     # crea todos los objetos que van a ser necesarios para la simulacion y le asigna valores de inicializacion
@@ -119,6 +128,28 @@ class Simulacion:
                 tasa_rendim = 4
             
             self.lista_fines[i] =  Fin(nombre_fin, cant_serv, tasa_rendim)
+
+        for i in range(len(self.v_acumuladores)):
+            if i == 0:
+            
+                nombre_servicio = "caja"
+            elif i == 1:
+                
+                nombre_servicio = "atencion_personalizada"
+            elif i == 2:
+                
+                nombre_servicio = "tarjeta_credito"
+            elif i == 3:
+                
+                nombre_servicio = "plazo_fijo"
+            elif i == 4:
+                
+                nombre_llegada = "prestamos"
+
+            self.v_acumuladores[i] = Acumulador(nombre_servicio)
+        
+            
+
     
     # genera la grilla/tabla, especificando encabezados, scrolls y tamaños
     def generar_tabla(self, cantidad_cajeros, tupla_inicial, max_cli):
@@ -174,6 +205,18 @@ class Simulacion:
             "estado tarjeta credito 2", "cola tarjeta credito", "estado plazo fijo", "cola plazo fijo",
             "estado prestamos 1", "estado prestamos 2", "cola prestamos"
         ]
+
+        for i in range(len(self.v_acumuladores)):
+            if i == 0: # caja
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(), 'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+            if i == 1: # at pers
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+            if i == 2: # tarj credito
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+            if i == 3: # plazo fijo
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
+            if i == 4: # prestamos
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador()]
 
         for i in range(max_cli):
             encabezados.append(f"E Cliente{i}")
@@ -261,10 +304,17 @@ class Simulacion:
             for cliente in self.v_clientes:
                 if cliente.tipo_servicio_demandado == tipo_servicio:
                     cliente.setEstadoSiendoAtendido(self.reloj)
+                    tiempo_espera = cliente.get_tiempo_espera()
+                    self.v_acumuladores[tipo_servicio].acumular_espera(tiempo_espera)
+                    
             self.colas[tipo_servicio] -= 1
         else:
             # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
             objeto_fin.v_prox_fin[nro_servidor] = None
             self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre()
+
+    
+
+
 
 

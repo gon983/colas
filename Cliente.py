@@ -17,6 +17,9 @@ class Cliente:
     def asignar_servidor(self, servidor):
         self.servidor_asignado = servidor
 
+    def get_tiempo_espera(self):
+        return self.tiempo_espera
+
     
 
     
