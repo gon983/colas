@@ -14,10 +14,10 @@ def truncate(number: float, max_decimals: int) -> float:
     return float(".".join((int_part, dec_part[:max_decimals])))
 
 
-def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta):
+def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta, tasa_servicio_cajas):
     simulacion = Simulacion(cantidad_cajeros)
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
-                            prestamos_cph, cantidad_cajeros)
+                            prestamos_cph, cantidad_cajeros,tasa_servicio_cajas)
     
     fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros )
             

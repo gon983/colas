@@ -79,7 +79,7 @@ class Simulacion:
 
     # crea todos los objetos que van a ser necesarios para la simulacion y le asigna valores de inicializacion
     def inicializacion(self, media_caja, media_atencion_personalizada, media_tarjeta_credito, media_plazo_fijo, media_prestamos,
-                    cantidad_cajas):
+                    cantidad_cajas, tasa_servicio_cajas):
         
         nombre_llegada = ""
         media = 0
@@ -110,7 +110,7 @@ class Simulacion:
             if i == 0: 
                 nombre_fin = "caja"
                 cant_serv = cantidad_cajas
-                tasa_rendim = 10
+                tasa_rendim = tasa_servicio_cajas
             elif i == 1: 
                 nombre_fin = "atencion_personalizada"
                 cant_serv = 3
@@ -250,7 +250,7 @@ class Simulacion:
         for servidor in self.lista_servidores[tipo_servicio]:
             if servidor.estoyLibre(): return (servidor)
         return(None)
-               
+        
     # Retorna el evento que sucedera mas proximamente (llegada o fin) junto con el tipo de servicio y numero de servidor que finalizo la atencion. 
     def buscar_proximo_evento(self):
         
