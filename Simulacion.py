@@ -170,7 +170,7 @@ class Simulacion:
                 pos=3
             elif i == 4:
                 
-                nombre_llegada = "prestamos"
+                nombre_servicio = "prestamos"
                 pos=4
             elif i == 5:
                 nombre_servicio = "deudas"
@@ -361,7 +361,53 @@ class Simulacion:
                 if not(servidor.estoyOcupado()):
                     servidor.acumular_ocio(tiempo_pasado)
 
+    # calcular los valores finales de los acumuladores
+    def calcular_valores_acumuladores(self, cantidad_cajeros):
+        resumen_acumuladores = []
+        for i in range(len(self.v_acumuladores)):
+            tiempo_espera = self.v_acumuladores[i].get_tiempo_espera()
+            cantidad_clientes_esperaron = self.v_acumuladores[i].get_cantidad_clientes_esperaron()
+            tiempo_ocio = self.v_acumuladores[i].get_tiempo_ocio()
+
+            # Dividir tiempo de ocio por la cantidad de servidores
+            if i == 0: # caja
+                cantidad_servidores = cantidad_cajeros
+            elif i == 1: # atencion personalizada
+                cantidad_servidores = 3
+            elif i == 2: # tarjeta credito
+                cantidad_servidores = 2
+            elif i == 3: # plazo fijo
+                cantidad_servidores = 1
+            elif i == 4: # prestamos
+                cantidad_servidores = 2
+            elif i == 5: # deudas
+                cantidad_servidores = 1
+
+
+
+            resumen_acumuladores.append((self.v_acumuladores[i].get_nombre_acumulador(), tiempo_espera, cantidad_clientes_esperaron, (tiempo_ocio / cantidad_servidores)))
+        return resumen_acumuladores
+
+    # Agregar los valores calculados a la interfaz gráfica
+    def agregar_resumen_acumuladores(self, resumen_acumuladores):
+    # Crear un nuevo frame para los acumuladores
+        frame_acumuladores = Frame(self.raiz)
+        frame_acumuladores.pack(pady=10, padx=10)
     
+    # Agregar etiquetas para cada acumulador dentro del nuevo frame
+        for acumulador in resumen_acumuladores:
+            nombre, tiempo_espera, cantidad_clientes, tiempo_ocio = acumulador
+            Label(frame_acumuladores, text=f"{nombre}:").pack(anchor='w')
+            if cantidad_clientes>0:
+                Label(frame_acumuladores, text=f"Tiempo de espera promedio: {tiempo_espera/ cantidad_clientes}").pack(anchor='w')
+            if tiempo_ocio>0:    
+                Label(frame_acumuladores, text=f"Porcentaje Ocupacion: {(self.reloj/tiempo_ocio)*100}").pack(anchor='w')
+
+        
+        
+
+
+        
 
 
 
