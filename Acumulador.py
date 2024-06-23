@@ -13,8 +13,7 @@ class Acumulador:
         self.tiempo_espera += tiempo_esperado
         self.cantidad_clientes_esperaron += 1
 
-    def acumular_ocio(self, tiempo_pasado):
-        self.tiempo_libre += tiempo_pasado
+
 
     def get_tiempo_espera(self):
         return round(self.tiempo_espera,2)

@@ -41,18 +41,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
 
-            # para acumular los tiempos de ocio para estadisticas
-            simulacion.acumular_ocio(tiempo_actual_simulacion)
-            for i in range(len(simulacion.lista_servidores)):
-                acum_aux = 0
-                for j in range(len(simulacion.lista_servidores[i])):
-                    acum_aux = simulacion.lista_servidores[i][j].get_tiempo_ocio()
-                simulacion.v_acumuladores[i].acumular_ocio(acum_aux)
-
-
-            
-                
-
+            if simulacion.reloj > duracion_simulacion: return
             
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
@@ -69,7 +58,12 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
                     nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
                 simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
             
-            if simulacion.reloj > duracion_simulacion: return
+            # para acumular los tiempos de ocio para estadisticas
+            # tiempo_pasado =  futuro_reloj - tiempo_actual_simulacion
+            
+            # simulacion.acumular_ocio(tiempo_pasado)
+            
+            
 
             # genera una nueva fila de datos
             fila_a_mostrar = simulacion.fila(nombre_evento, cantidad_cajeros)
@@ -79,6 +73,11 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
                 simulacion.agregar_fila(fila_a_mostrar)
                 
             simulacion.raiz.after(0, actualizar_filas, simulacion.reloj) # el primer parametro es cada cuanto se llama la funcion
+        else:
+            resumen_acumuladores = simulacion.calcular_valores_acumuladores(cantidad_cajeros)
+            simulacion.agregar_resumen_acumuladores(resumen_acumuladores)
+
+
 
     actualizar_filas(0)
     simulacion.raiz.mainloop()
