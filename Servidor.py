@@ -29,7 +29,12 @@ class Servidor:
 
     def get_tiempo_ocio(self):
         return self.tiempo_ocio
-    
 
+    def setEstadoInterrumpido(self):
+        self.estado = 'interrumpido'
+
+    def estoyInterrumpido(self):
+        if self.estado == "interrumpido": return True
+        else: return False
 
         

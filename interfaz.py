@@ -32,12 +32,12 @@ def llamar_TP():
         if int(caja_cph) >= 0 \
                 and int(at_personalizada_cph) > 0 \
                 and int(tarj_credito_cph) > 0 \
-                and int(plazo_fijo_cph) >= 0 \
-                and int(prestamos_cph) >= 0 \
+                and int(plazo_fijo_cph) > 0 \
+                and int(prestamos_cph) > 0 \
                 and int(cantidad_cajeros_cph) > 0 \
                 and int(linea_desde) >= 0 \
                 and int(linea_hasta) >= 0 \
-                and int(tasa_servicio_caja) >= 0\
+                and int(tasa_servicio_caja) > 0\
                 and int(tiempo_simulacion) >= 0:
             iniciar_simulacion(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
                     int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(linea_desde), int(linea_hasta), int(tasa_servicio_caja)) # Aca llama al iniciar_simulacion

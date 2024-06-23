@@ -1,3 +1,4 @@
+import RK
 import main
 import Servidor
 # Definición de la clase
@@ -18,8 +19,13 @@ class Fin:
     
     
     def generar_prox_fin(self, horaActual, nroServidor):
-        t_entre_fines = main.generarNumeroExponencial(self.rendimiento_medio)
-        self.v_prox_fin[nroServidor] = main.truncate(horaActual + t_entre_fines, 2)
+        if nroServidor == 5:
+            # en el caso de que las interrupciones, se manejan con RK. se considera que t=1 son 30seg
+            t_entre_fines = RK.generar_Tabla(horaActual)
+            self.v_prox_fin[0] = main.truncate(horaActual + (t_entre_fines * 30), 2)
+        else:
+            t_entre_fines = main.generarNumeroExponencial(self.rendimiento_medio)
+            self.v_prox_fin[nroServidor] = main.truncate(horaActual + t_entre_fines, 2)
         
         
     def buscar_proximo_fin_servidor(self):

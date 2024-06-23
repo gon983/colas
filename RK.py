@@ -74,5 +74,5 @@ def generar_Tabla(hora_corte):
          tabla.append(fila)
          i = i + 1
 
-    return tabla
+    return t
 

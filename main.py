@@ -4,10 +4,24 @@ import random
 import math
 from Simulacion import *
 
+
 def generarNumeroExponencial(media):
         return truncate(-media*math.log(1-random.random()),2)
         # Cuerpo del método
-        
+
+
+def generarTiempoCorte(tabla1, tabla2, tiempo):
+    r = truncate(random.random(), 2)
+    t = 0
+    if tiempo == 0:
+        t = random.randint(10, 50)
+    else:
+        for i in tabla2:
+            if r < i:
+                t = tabla1[tabla2.index(i)] * tiempo
+                break
+    return t
+
 
 def truncate(number: float, max_decimals: int) -> float:
     int_part, dec_part = str(number).split(".")
@@ -43,10 +57,16 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
             if nro_servidor == -1:
-                nombre_evento = "llegada_cliente_" + proximo_evento.nombre
+                if tipo_servicio == 5:
+                    nombre_evento = "llegada_interrupcion"
+                else:
+                    nombre_evento = "llegada_cliente_" + proximo_evento.nombre
                 simulacion.ejecutar_proxima_llegada(proximo_evento, tipo_servicio)
             else:
-                nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
+                if tipo_servicio == 5:
+                    nombre_evento = "fin_interrupcion"
+                else:
+                    nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
                 simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
             
             if simulacion.reloj > duracion_simulacion: return

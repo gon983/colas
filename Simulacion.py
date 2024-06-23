@@ -17,12 +17,15 @@ class Simulacion:
         self.cant_eventos_sucedidos = 0
         self.reloj = 0
         # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, 2 tarjetas de credito, 3 plazo fijo, 4 prestamo.
-        self.lista_llegadas = [None, None, None, None, None]
-        self.lista_fines = [None, None, None, None, None]
+        self.lista_llegadas = [None, None, None, None, None, None]
+        self.lista_fines = [None, None, None, None, None, None]
         self.lista_servidores =[[],[],[],[],[]]
         self.v_clientes =[]
         #cada posicion representa una cola por servicio
         self.colas = [0, 0, 0, 0, 0]
+        self.inicioInt = 0
+        self.finInt = 0
+        self.listaServidoresInt = []
 
         # 1 acumulador por servicio 
         self.v_acumuladores = [None,None,None,None,None]
@@ -47,13 +50,13 @@ class Simulacion:
 
     # crea una tupla con todos los valores a insertar en una nueva fila de la grilla
     def fila(self, nombre, cantidad_cajeros):
-        v_inicial = [self.cant_eventos_sucedidos, nombre, self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada]
+        v_inicial = [self.cant_eventos_sucedidos, nombre, self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada, self.lista_llegadas[5].prox_llegada]
         
         for i in range(cantidad_cajeros):
             x = self.lista_fines[0].v_prox_fin[i] 
             v_inicial.append(x)
         
-        v_final =  [self.lista_fines[1].v_prox_fin[0], self.lista_fines[1].v_prox_fin[1], self.lista_fines[1].v_prox_fin[2], self.lista_fines[2].v_prox_fin[0], self.lista_fines[2].v_prox_fin[1], self.lista_fines[3].v_prox_fin[0], self.lista_fines[4].v_prox_fin[0], self.lista_fines[4].v_prox_fin[1]]
+        v_final =  [self.lista_fines[1].v_prox_fin[0], self.lista_fines[1].v_prox_fin[1], self.lista_fines[1].v_prox_fin[2], self.lista_fines[2].v_prox_fin[0], self.lista_fines[2].v_prox_fin[1], self.lista_fines[3].v_prox_fin[0], self.lista_fines[4].v_prox_fin[0], self.lista_fines[4].v_prox_fin[1], self.lista_fines[5].v_prox_fin[0]]
         
         for i in range(cantidad_cajeros):
             x = self.lista_servidores[0][i].getEstado()
@@ -83,24 +86,41 @@ class Simulacion:
         
         nombre_llegada = ""
         media = 0
+        tabla_prob = []
+        tabla_resultados = []
         for i in range(len(self.lista_llegadas)):
             if i == 0:
                 media = media_caja
                 nombre_llegada = "caja"
+                tabla_prob = []
+                tabla_resultados = []
             elif i == 1:
                 media = media_atencion_personalizada
                 nombre_llegada = "atencion_personalizada"
+                tabla_prob = []
+                tabla_resultados = []
             elif i == 2:
                 media = media_tarjeta_credito
                 nombre_llegada = "tarjeta_credito"
+                tabla_prob = []
+                tabla_resultados = []
             elif i == 3:
                 media = media_plazo_fijo
                 nombre_llegada = "plazo_fijo"
+                tabla_prob = []
+                tabla_resultados = []
             elif i == 4:
                 media = media_prestamos
                 nombre_llegada = "prestamos"
+                tabla_prob = []
+                tabla_resultados = []
+            elif i == 5:
+                media = 0
+                nombre_llegada = "interrupcion"
+                tabla_prob = [0.2, 0.8, 1]
+                tabla_resultados = [4, 6, 8]
             
-            self.lista_llegadas[i] =  Llegada(media, nombre_llegada, None)
+            self.lista_llegadas[i] =  Llegada(media, nombre_llegada, None, tabla_resultados, tabla_prob)
             self.lista_llegadas[i].generar_prox_Llegada(0)
             
         cant_serv = 0
@@ -127,6 +147,10 @@ class Simulacion:
                 nombre_fin = "prestamos"
                 cant_serv = 2
                 tasa_rendim = 4
+            elif i == 5:
+                nombre_fin = "interrupcion"
+                cant_serv = 1
+                tasa_rendim = 0
             
             self.lista_fines[i] =  Fin(nombre_fin, cant_serv, tasa_rendim)
 
@@ -168,9 +192,9 @@ class Simulacion:
         ventana = Frame(raiz)
         ventana.pack(fill=BOTH, expand=True)
         
-        columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15", "col16"]
+        columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15", "col16", "col17", "col18"]
         for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 17+ max_cli)):
-            columns.append(f'col{17+i}')    
+            columns.append(f'col{19+i}')
 
         grilla = ttk.Treeview(ventana, columns=columns, show="headings")
         
@@ -193,14 +217,16 @@ class Simulacion:
         # Configurar encabezados de las columnas
         encabezados = [
             "Nro Evento", "Evento", "Reloj(horas)", "Proxima llegada caja", "Proxima at personalizada",
-            "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos"
+            "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos",
+            "Proxima llegada de corte"
         ]
         for i in range(cantidad_cajeros):
             encabezados.append(f"fin caja {i+1}")
 
         encabezados += [
             "fin atencion personalizada 1", "fin atencion personalizada 2", "fin atencion personalizada 3",
-            "fin tarjeta credito 1", "fin tarjeta credito 2", "fin plazo fijo", "fin prestamos 1", "fin prestamos 2"
+            "fin tarjeta credito 1", "fin tarjeta credito 2", "fin plazo fijo", "fin prestamos 1", "fin prestamos 2",
+            "fin interrupcion"
         ]
 
         for i in range(cantidad_cajeros):
@@ -250,13 +276,12 @@ class Simulacion:
         for servidor in self.lista_servidores[tipo_servicio]:
             if servidor.estoyLibre(): return (servidor)
         return(None)
-        
+
     # Retorna el evento que sucedera mas proximamente (llegada o fin) junto con el tipo de servicio y numero de servidor que finalizo la atencion. 
     def buscar_proximo_evento(self):
-        
+
         # busca la proxima llegada
         (tipo_llegada, objeto_prox_lleg) = min(enumerate(self.lista_llegadas), key=lambda llegadaX: llegadaX[1].prox_llegada)
-
         # busca el proximo fin
         prox_fin = float('inf')
         tipo_fin = -1
@@ -278,48 +303,80 @@ class Simulacion:
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
         self.reloj = objeto_llegada.prox_llegada
         self.cant_eventos_sucedidos += 1
+        if tipo_servicio == 5:
+            self.inicioInt = self.reloj
+            for j in range(5):
+                for i in self.lista_servidores[j]:
+                    self.listaServidoresInt.append(i.getEstado())
+                    i.setEstadoInterrumpido()
+            self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, tipo_servicio)
+            self.finInt = self.lista_fines[tipo_servicio].v_prox_fin[0]
+            z = 0
+            for k in range(5):
+                tamaño = self.lista_fines[k].cantidad_servidores
+                self.lista_llegadas[k].prox_llegada = round(self.lista_llegadas[k].prox_llegada + \
+                                                      (self.finInt - self.inicioInt), 2)
+                while z<tamaño:
+                    if self.lista_fines[k].v_prox_fin[z] is not None:
+                        self.lista_fines[k].v_prox_fin[z] = round(self.lista_fines[k].v_prox_fin[z] + \
+                                                            (self.finInt - self.inicioInt), 2)
+                    else:
+                        pass
+                    z = z + 1
+                z = 0
+        else:
+            servidor = self.buscar_servidor_disponible(tipo_servicio)
 
-        servidor = self.buscar_servidor_disponible(tipo_servicio)
-    
-        if servidor is not None:
-            # si hay un servidor disponible, se crea un cliente con estado Siendo atendido, y se le asigna el servidor que lo atiende.
-            # se establece como ocupado al servidor y se genera un proximo fin de atencion para el mismo.
-            nuevo_cliente = Cliente(f"siendoAtendido_{objeto_llegada.nombre}", self.reloj)
-            nuevo_cliente.asignar_servidor(servidor)
-            servidor.setEstadoOcupado()
-            self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
+            if servidor is not None:
+                # si hay un servidor disponible, se crea un cliente con estado Siendo atendido, y se le asigna el servidor que lo atiende.
+                # se establece como ocupado al servidor y se genera un proximo fin de atencion para el mismo.
+                nuevo_cliente = Cliente(f"siendoAtendido_{objeto_llegada.nombre}", self.reloj)
+                nuevo_cliente.asignar_servidor(servidor)
+                servidor.setEstadoOcupado()
+                self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
 
-        else: 
-            # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
-            nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
-            self.colas[tipo_servicio] += 1
-            
-        # se le asigna al cliente cual fue el tipo de servicio que demando.
-        nuevo_cliente.tipo_servicio_demandado = tipo_servicio
-        self.v_clientes.append(nuevo_cliente)
-        
+            else:
+                # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
+                nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
+                self.colas[tipo_servicio] += 1
+
+            # se le asigna al cliente cual fue el tipo de servicio que demando.
+            nuevo_cliente.tipo_servicio_demandado = tipo_servicio
+            self.v_clientes.append(nuevo_cliente)
+
         objeto_llegada.generar_prox_Llegada(self.reloj)
     
     # ejecuta todas las acciones que deben suceder al haber un fin de atencion.
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
         self.cant_eventos_sucedidos += 1
-        
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
+        if tipo_servicio == 5:
+            h = 0
+            for j in range(5):
+                i = len(self.lista_servidores[j])
+                for z in range(i):
+                    self.lista_servidores[j][z].estado = self.listaServidoresInt[h]
+                    h = h + 1
+            self.listaServidoresInt = []
+            objeto_fin.v_prox_fin[0] = None
 
-        if self.colas[tipo_servicio] > 0:
-            # si hay clientes en cola, se genera un proximo fin, se le cambia el estado al cliente y se disminuye en uno la cola
-            objeto_fin.generar_prox_fin(self.reloj, nro_servidor)
-            for cliente in self.v_clientes:
-                if cliente.tipo_servicio_demandado == tipo_servicio:
-                    cliente.setEstadoSiendoAtendido(self.reloj)
-                    tiempo_espera = cliente.get_tiempo_espera()
-                    self.v_acumuladores[tipo_servicio].acumular_espera(tiempo_espera)
-                    
-            self.colas[tipo_servicio] -= 1
         else:
-            # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
-            objeto_fin.v_prox_fin[nro_servidor] = None
-            self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre()
+            if self.colas[tipo_servicio] > 0:
+                # si hay clientes en cola, se genera un proximo fin, se le cambia el estado al cliente y se disminuye en uno la cola
+                objeto_fin.generar_prox_fin(self.reloj, nro_servidor)
+                for cliente in self.v_clientes:
+                    if cliente.tipo_servicio_demandado == tipo_servicio:
+                        cliente.setEstadoSiendoAtendido(self.reloj)
+                        tiempo_espera = cliente.get_tiempo_espera()
+                        self.v_acumuladores[tipo_servicio].acumular_espera(tiempo_espera)
+
+                self.colas[tipo_servicio] -= 1
+            else:
+                # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
+                objeto_fin.v_prox_fin[nro_servidor] = None
+                self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre()
+
+
 
     def acumular_ocio(self, tiempo_pasado): 
         for i in range(len(self.lista_servidores)):
