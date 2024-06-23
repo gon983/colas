@@ -384,8 +384,39 @@ class Simulacion:
                 if not(servidor.estoyOcupado()):
                     servidor.acumular_ocio(tiempo_pasado)
 
-    
+    def calcular_valores_acumuladores(self, cantidad_cajeros):
+        resumen_acumuladores = []
+        for i in range(len(self.v_acumuladores)):
+            tiempo_espera = self.v_acumuladores[i].get_tiempo_espera()
+            cantidad_clientes_esperaron = self.v_acumuladores[i].get_cantidad_clientes_esperaron()
+            tiempo_ocio = sum(servidor.get_tiempo_ocio() for servidor in self.lista_servidores[i])
+            if i == 0:
+                cantidad_servidores = cantidad_cajeros
+            elif i == 1:
+                cantidad_servidores = 3
+            elif i == 2:
+                cantidad_servidores = 2
+            elif i == 3:
+                cantidad_servidores = 1
+            elif i == 4:
+                cantidad_servidores = 2
+            elif i == 5:
+                cantidad_servidores = 1
+            resumen_acumuladores.append((self.v_acumuladores[i].get_nombre_acumulador(), tiempo_espera,
+                                         cantidad_clientes_esperaron, (tiempo_ocio / cantidad_servidores)))
+        return resumen_acumuladores
 
-
-
+    def agregar_resumen_acumuladores(self, resumen_acumuladores):
+        frame_acumuladores = Frame(self.raiz)
+        frame_acumuladores.pack(pady=10, padx=10)
+        for acumulador in resumen_acumuladores:
+            nombre, tiempo_espera, cantidad_clientes, tiempo_ocio_promedio = acumulador
+            Label(frame_acumuladores, text=f"{nombre}:").pack(anchor='w')
+            if cantidad_clientes > 0:
+                Label(frame_acumuladores, text=f"Tiempo de espera promedio: {tiempo_espera / cantidad_clientes}").pack(
+                    anchor='w')
+            if tiempo_ocio_promedio > 0:
+                Label(frame_acumuladores,
+                      text=f"Porcentaje Ocupacion: {((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100}").pack(
+                    anchor='w')
 

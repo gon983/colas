@@ -45,6 +45,7 @@ def mostrar_datos(tabla):
     grilla.pack(fill="both", expand=True)
 
     raiz.mainloop()
+    return
 
 def generar_Tabla(hora_corte):
     i = 0
