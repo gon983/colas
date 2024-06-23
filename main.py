@@ -28,19 +28,6 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
 
             if simulacion.reloj > duracion_simulacion: return
-
-            # para acumular los tiempos de ocio para estadisticas
-            simulacion.acumular_ocio(tiempo_actual_simulacion)
-            for i in range(len(simulacion.lista_servidores)):
-                acum_aux = 0
-                for j in range(len(simulacion.lista_servidores[i])):
-                    acum_aux = simulacion.lista_servidores[i][j].get_tiempo_ocio()
-                simulacion.v_acumuladores[i].acumular_ocio(acum_aux)
-
-
-            
-                
-
             
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
@@ -50,6 +37,11 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             else:
                 nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
                 simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
+            
+            # para acumular los tiempos de ocio para estadisticas
+            # tiempo_pasado =  futuro_reloj - tiempo_actual_simulacion
+            
+            # simulacion.acumular_ocio(tiempo_pasado)
             
             
 
