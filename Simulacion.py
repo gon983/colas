@@ -16,7 +16,7 @@ class Simulacion:
         # simulacion es quien tiene el conocimiento del reloj y de todos los objetos del sistema
         self.cant_eventos_sucedidos = 0
         self.reloj = 0
-        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, 2 tarjetas de credito, 3 plazo fijo, 4 prestamo.
+        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, 2 tarjetas de credito, 3 plazo fijo, 4 prestamo, 5 DEUDAS.
         self.lista_llegadas = [None, None, None, None, None, None]
         self.lista_fines = [None, None, None, None, None, None]
         self.lista_servidores =[[],[],[],[],[]]
@@ -413,10 +413,10 @@ class Simulacion:
             nombre, tiempo_espera, cantidad_clientes, tiempo_ocio_promedio = acumulador
             Label(frame_acumuladores, text=f"{nombre}:").pack(anchor='w')
             if cantidad_clientes > 0:
-                Label(frame_acumuladores, text=f"Tiempo de espera promedio: {tiempo_espera / cantidad_clientes}").pack(
+                Label(frame_acumuladores, text=f"Tiempo de espera promedio: {round(tiempo_espera / cantidad_clientes, 2)}").pack(
                     anchor='w')
             if tiempo_ocio_promedio > 0:
                 Label(frame_acumuladores,
-                      text=f"Porcentaje Ocupacion: {((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100}").pack(
+                      text=f"Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
                     anchor='w')
 

@@ -37,7 +37,8 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             
     simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,20)
     def actualizar_filas(tiempo_actual_simulacion):
-        if tiempo_actual_simulacion <= duracion_simulacion:
+        if tiempo_actual_simulacion <= duracion_simulacion: #segun como lo hicimos en los acumuladores se ven los valores finales de la 
+            # duracion de las simulacion no los valores finales de las lineas q se muestran. ahi seria <= linea_hasta
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
 
@@ -57,11 +58,6 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
                 else:
                     nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)
                 simulacion.ejecutar_proximo_fin(proximo_evento, tipo_servicio, nro_servidor)
-            
-            # para acumular los tiempos de ocio para estadisticas
-            # tiempo_pasado =  futuro_reloj - tiempo_actual_simulacion
-            
-            # simulacion.acumular_ocio(tiempo_pasado)
             
             
 

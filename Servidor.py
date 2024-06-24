@@ -25,7 +25,7 @@ class Servidor:
     def setEstadoOcupado(self, reloj_actual):
         if self.estado == 'libre':  # Si estaba libre, acumula el ocio hasta ahora
             self.tiempo_ocio += reloj_actual - self.ultimo_cambio_estado
-            print(f'tiempo ocio {self.tiempo_ocio}, reloj actual= {reloj_actual}, ultimo cambio estado= {self.ultimo_cambio_estado}-')
+            # print(f'tiempo ocio {self.tiempo_ocio}, reloj actual= {reloj_actual}, ultimo cambio estado= {self.ultimo_cambio_estado}-')
         self.estado = 'ocupado'
         self.ultimo_cambio_estado = reloj_actual
     
