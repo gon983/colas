@@ -332,7 +332,7 @@ class Simulacion:
                 # se establece como ocupado al servidor y se genera un proximo fin de atencion para el mismo.
                 nuevo_cliente = Cliente(f"siendoAtendido_{objeto_llegada.nombre}", self.reloj)
                 nuevo_cliente.asignar_servidor(servidor)
-                servidor.setEstadoOcupado()
+                servidor.setEstadoOcupado(self.reloj)
                 self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
 
             else:
@@ -374,7 +374,7 @@ class Simulacion:
             else:
                 # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
                 objeto_fin.v_prox_fin[nro_servidor] = None
-                self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre()
+                self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre(self.reloj)
 
 
 
