@@ -28,14 +28,14 @@ def truncate(number: float, max_decimals: int) -> float:
     return float(".".join((int_part, dec_part[:max_decimals])))
 
 
-def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta, tasa_servicio_cajas):
+def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta, tasa_servicio_cajas, clientes):
     simulacion = Simulacion(cantidad_cajeros)
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                             prestamos_cph, cantidad_cajeros,tasa_servicio_cajas)
     
     fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros )
             
-    simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar,20)
+    simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar, clientes)
     def actualizar_filas(tiempo_actual_simulacion):
         if tiempo_actual_simulacion <= duracion_simulacion: #segun como lo hicimos en los acumuladores se ven los valores finales de la 
             # duracion de las simulacion no los valores finales de las lineas q se muestran. ahi seria <= linea_hasta

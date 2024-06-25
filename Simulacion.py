@@ -178,8 +178,8 @@ class Simulacion:
                 pos=4
 
             self.v_acumuladores[i] = Acumulador(nombre_servicio, pos)
-        
-            
+
+
 
     
     # genera la grilla/tabla, especificando encabezados, scrolls y tamaños
@@ -193,7 +193,7 @@ class Simulacion:
         ventana.pack(fill=BOTH, expand=True)
         
         columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15", "col16", "col17", "col18"]
-        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 17+ max_cli)):
+        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 17+ max_cli + 7)):
             columns.append(f'col{19+i}')
 
         grilla = ttk.Treeview(ventana, columns=columns, show="headings")
@@ -211,8 +211,8 @@ class Simulacion:
 
         # Configurar las columnas de la grilla
         for col in columns:
-            if col == "col2":  grilla.column(col, width=150)
-            else: grilla.column(col, width=100)
+            if col == "col2":  grilla.column(col, width=200)
+            else: grilla.column(col, width=150)
 
         # Configurar encabezados de las columnas
         encabezados = [
@@ -252,7 +252,7 @@ class Simulacion:
                 encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
 
         for i in range(max_cli):
-            encabezados.append(f"E Cliente{i}")
+            encabezados.append(f"E Cliente{i + 1}")
 
         for col, encabezado in zip(columns, encabezados):
             grilla.heading(col, text=encabezado)
@@ -305,10 +305,15 @@ class Simulacion:
         self.cant_eventos_sucedidos += 1
         if tipo_servicio == 5:
             self.inicioInt = self.reloj
+            self
+           # for j in range(5):
+           #     for i in self.lista_servidores[j]:
+           #         self.listaServidoresInt.append(i.getEstado())
+           #         i.setEstadoInterrumpido()
             for j in range(5):
-                for i in self.lista_servidores[j]:
-                    self.listaServidoresInt.append(i.getEstado())
-                    i.setEstadoInterrumpido()
+                 for i in self.lista_servidores[j]:
+                     self.listaServidoresInt.append(i.getEstado())
+                     i.setEstadoInterrumpido()
             self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, tipo_servicio)
             self.finInt = self.lista_fines[tipo_servicio].v_prox_fin[0]
             z = 0
@@ -351,6 +356,7 @@ class Simulacion:
         self.cant_eventos_sucedidos += 1
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
         if tipo_servicio == 5:
+
             h = 0
             for j in range(5):
                 i = len(self.lista_servidores[j])
@@ -361,12 +367,13 @@ class Simulacion:
             objeto_fin.v_prox_fin[0] = None
 
         else:
+            self.reloj = objeto_fin.v_prox_fin[nro_servidor]
             if self.colas[tipo_servicio] > 0:
                 # si hay clientes en cola, se genera un proximo fin, se le cambia el estado al cliente y se disminuye en uno la cola
                 objeto_fin.generar_prox_fin(self.reloj, nro_servidor)
                 for cliente in self.v_clientes:
                     if cliente.tipo_servicio_demandado == tipo_servicio:
-                        cliente.setEstadoSiendoAtendido(self.reloj)
+                        cliente.setEstadoSiendoAtendido(self.reloj, cliente.tipo_servicio_demandado)
                         tiempo_espera = cliente.get_tiempo_espera()
                         self.v_acumuladores[tipo_servicio].acumular_espera(tiempo_espera)
 
@@ -375,6 +382,13 @@ class Simulacion:
                 # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
                 objeto_fin.v_prox_fin[nro_servidor] = None
                 self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre(self.reloj)
+                for cliente in self.v_clientes:
+                    if cliente.tipo_servicio_demandado == tipo_servicio:
+                        cliente.setEstadoNone()
+                        cliente.tipo_servicio_demandado = -1
+                        break
+
+
 
 
 
