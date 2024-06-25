@@ -299,36 +299,36 @@ class Simulacion:
         if prox_fin < objeto_prox_lleg.prox_llegada: return (self.lista_fines[tipo_fin], tipo_fin, num_servidor)
         else: return (objeto_prox_lleg, tipo_llegada, -1)
 
+
+    def ejecutarInterrupcion(self, tipo_servicio):
+        for j in range(5):
+            for i in self.lista_servidores[j]:
+                self.listaServidoresInt.append(i.getEstado())
+                i.setEstadoInterrumpido()
+
+        self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, tipo_servicio)
+        self.finInt = self.lista_fines[tipo_servicio].v_prox_fin[0]
+        z = 0
+        for k in range(5):
+            tamaño = self.lista_fines[k].cantidad_servidores
+            self.lista_llegadas[k].prox_llegada = round(self.lista_llegadas[k].prox_llegada + \
+                                                        (self.finInt - self.inicioInt), 2)
+            while z < tamaño:
+                if self.lista_fines[k].v_prox_fin[z] is not None:
+                    self.lista_fines[k].v_prox_fin[z] = round(self.lista_fines[k].v_prox_fin[z] + \
+                                                              (self.finInt - self.inicioInt), 2)
+                else:
+                    pass
+                z = z + 1
+            z = 0
+
     # ejecuta todas las acciones que deben suceder al haber una llegada.
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
         self.reloj = objeto_llegada.prox_llegada
         self.cant_eventos_sucedidos += 1
         if tipo_servicio == 5:
             self.inicioInt = self.reloj
-            self
-           # for j in range(5):
-           #     for i in self.lista_servidores[j]:
-           #         self.listaServidoresInt.append(i.getEstado())
-           #         i.setEstadoInterrumpido()
-            for j in range(5):
-                 for i in self.lista_servidores[j]:
-                     self.listaServidoresInt.append(i.getEstado())
-                     i.setEstadoInterrumpido()
-            self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, tipo_servicio)
-            self.finInt = self.lista_fines[tipo_servicio].v_prox_fin[0]
-            z = 0
-            for k in range(5):
-                tamaño = self.lista_fines[k].cantidad_servidores
-                self.lista_llegadas[k].prox_llegada = round(self.lista_llegadas[k].prox_llegada + \
-                                                      (self.finInt - self.inicioInt), 2)
-                while z<tamaño:
-                    if self.lista_fines[k].v_prox_fin[z] is not None:
-                        self.lista_fines[k].v_prox_fin[z] = round(self.lista_fines[k].v_prox_fin[z] + \
-                                                            (self.finInt - self.inicioInt), 2)
-                    else:
-                        pass
-                    z = z + 1
-                z = 0
+            self.ejecutarInterrupcion(tipo_servicio)
         else:
             servidor = self.buscar_servidor_disponible(tipo_servicio)
 
@@ -350,19 +350,21 @@ class Simulacion:
             self.v_clientes.append(nuevo_cliente)
 
         objeto_llegada.generar_prox_Llegada(self.reloj)
-    
+
+    def setearInterrumpido(self):
+        h = 0
+        for j in range(5):
+            i = len(self.lista_servidores[j])
+            for z in range(i):
+                self.lista_servidores[j][z].estado = self.listaServidoresInt[h]
+                h = h + 1
+
     # ejecuta todas las acciones que deben suceder al haber un fin de atencion.
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
         self.cant_eventos_sucedidos += 1
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
         if tipo_servicio == 5:
-
-            h = 0
-            for j in range(5):
-                i = len(self.lista_servidores[j])
-                for z in range(i):
-                    self.lista_servidores[j][z].estado = self.listaServidoresInt[h]
-                    h = h + 1
+            self.setearInterrumpido()
             self.listaServidoresInt = []
             objeto_fin.v_prox_fin[0] = None
 

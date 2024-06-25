@@ -37,7 +37,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             
     simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar, clientes)
     def actualizar_filas(tiempo_actual_simulacion):
-        if tiempo_actual_simulacion <= duracion_simulacion: #segun como lo hicimos en los acumuladores se ven los valores finales de la 
+        if tiempo_actual_simulacion <= linea_hasta: #segun como lo hicimos en los acumuladores se ven los valores finales de la
             # duracion de las simulacion no los valores finales de las lineas q se muestran. ahi seria <= linea_hasta
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
