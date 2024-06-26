@@ -13,6 +13,9 @@ class Acumulador:
         self.tiempo_espera += tiempo_esperado
         self.cantidad_clientes_esperaron += 1
 
+        # se ejecuta 1: cuando llega un cliente y pone en estado siendo atendido
+        # 2: cuando termina un servicio y se pasa a alguien en cola a siendo atendido
+
 
 
     def get_tiempo_espera(self):
