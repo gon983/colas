@@ -32,5 +32,8 @@ class Acumulador:
     
     def get_posicion(self):
         return self.posicion
+    
+
+
 
         

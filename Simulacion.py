@@ -70,7 +70,7 @@ class Simulacion:
         for i in range(len(self.v_acumuladores)):    
             v_3.append(self.v_acumuladores[i].get_tiempo_espera())
             v_3.append(self.v_acumuladores[i].get_cantidad_clientes_esperaron())
-            v_3.append(self.v_acumuladores[i].get_tiempo_ocio())
+            v_3.append(round(sum(servidor.get_tiempo_ocio() for servidor in self.lista_servidores[i]),2))
 
         if len(self.v_clientes)>0:
             for i in range(len(self.v_clientes)):
