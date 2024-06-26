@@ -47,13 +47,13 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
             if nro_servidor == -1:
-                if tipo_servicio == 5:
+                if tipo_servicio == 6:
                     nombre_evento = "llegada_interrupcion"
                 else:
                     nombre_evento = "llegada_cliente_" + proximo_evento.nombre
                 simulacion.ejecutar_proxima_llegada(proximo_evento, tipo_servicio)
             else:
-                if tipo_servicio == 5:
+                if tipo_servicio == 6:
                     nombre_evento = "fin_interrupcion"
                 else:
                     nombre_evento = "fin_atencion_" + proximo_evento.nombre + "_" + str(nro_servidor)

@@ -16,19 +16,19 @@ class Simulacion:
         # simulacion es quien tiene el conocimiento del reloj y de todos los objetos del sistema
         self.cant_eventos_sucedidos = 0
         self.reloj = 0
-        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, 2 tarjetas de credito, 3 plazo fijo, 4 prestamo, 5 DEUDAS.
-        self.lista_llegadas = [None, None, None, None, None, None]
-        self.lista_fines = [None, None, None, None, None, None]
-        self.lista_servidores =[[],[],[],[],[]]
+        # cada posicion representa un tipo de servicio. 0: caja, 1: atencion personalizada, 2 tarjetas de credito, 3 plazo fijo, 4 prestamo, 5 Deudas, 6 Interrupciones.
+        self.lista_llegadas = [None, None, None, None, None, None,None]
+        self.lista_fines = [None, None, None, None, None, None,None]
+        self.lista_servidores =[[],[],[],[],[],[]]
         self.v_clientes =[]
         #cada posicion representa una cola por servicio
-        self.colas = [0, 0, 0, 0, 0]
+        self.colas = [0, 0, 0, 0, 0,0]
         self.inicioInt = 0
         self.finInt = 0
         self.listaServidoresInt = []
 
         # 1 acumulador por servicio 
-        self.v_acumuladores = [None,None,None,None,None]
+        self.v_acumuladores = [None,None,None,None,None,None]
         
         # se carga la lista de servidores segun la cantidad de servidores especificados
         
@@ -46,17 +46,20 @@ class Simulacion:
 
         for i in range(2):
             self.lista_servidores[4].append(Servidor(i,'libre'))
+        
+        for i in range(1):
+            self.lista_servidores[5].append(Servidor(i, 'libre'))
 
 
     # crea una tupla con todos los valores a insertar en una nueva fila de la grilla
     def fila(self, nombre, cantidad_cajeros):
-        v_inicial = [self.cant_eventos_sucedidos, nombre, self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada, self.lista_llegadas[5].prox_llegada]
+        v_inicial = [self.cant_eventos_sucedidos, nombre, self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada, self.lista_llegadas[5].prox_llegada, self.lista_llegadas[6].prox_llegada]
         
         for i in range(cantidad_cajeros):
             x = self.lista_fines[0].v_prox_fin[i] 
             v_inicial.append(x)
         
-        v_final =  [self.lista_fines[1].v_prox_fin[0], self.lista_fines[1].v_prox_fin[1], self.lista_fines[1].v_prox_fin[2], self.lista_fines[2].v_prox_fin[0], self.lista_fines[2].v_prox_fin[1], self.lista_fines[3].v_prox_fin[0], self.lista_fines[4].v_prox_fin[0], self.lista_fines[4].v_prox_fin[1], self.lista_fines[5].v_prox_fin[0]]
+        v_final =  [self.lista_fines[1].v_prox_fin[0], self.lista_fines[1].v_prox_fin[1], self.lista_fines[1].v_prox_fin[2], self.lista_fines[2].v_prox_fin[0], self.lista_fines[2].v_prox_fin[1], self.lista_fines[3].v_prox_fin[0], self.lista_fines[4].v_prox_fin[0], self.lista_fines[4].v_prox_fin[1], self.lista_fines[5].v_prox_fin[0], self.lista_fines[6].v_prox_fin[0]]
         
         for i in range(cantidad_cajeros):
             x = self.lista_servidores[0][i].getEstado()
@@ -65,7 +68,7 @@ class Simulacion:
         #como hay cola unica por servicio saque esto del for.
         v_final.append(self.colas[0])   
             
-        v_3 = [ self.lista_servidores[1][0].getEstado(), self.lista_servidores[1][1].getEstado(), self.lista_servidores[1][2].getEstado(), self.colas[1], self.lista_servidores[2][0].getEstado(), self.lista_servidores[2][1].getEstado(), self.colas[2], self.lista_servidores[3][0].getEstado(), self.colas[3], self.lista_servidores[4][0].getEstado(), self.lista_servidores[4][1].getEstado(), self.colas[4] ]
+        v_3 = [ self.lista_servidores[1][0].getEstado(), self.lista_servidores[1][1].getEstado(), self.lista_servidores[1][2].getEstado(), self.colas[1], self.lista_servidores[2][0].getEstado(), self.lista_servidores[2][1].getEstado(), self.colas[2], self.lista_servidores[3][0].getEstado(), self.colas[3], self.lista_servidores[4][0].getEstado(), self.lista_servidores[4][1].getEstado(), self.colas[4], self.lista_servidores[5][0].getEstado(), self.colas[5] ]
 
         for i in range(len(self.v_acumuladores)):    
             v_3.append(self.v_acumuladores[i].get_tiempo_espera())
@@ -114,7 +117,13 @@ class Simulacion:
                 nombre_llegada = "prestamos"
                 tabla_prob = []
                 tabla_resultados = []
-            elif i == 5:
+            elif i==5:
+                media = media_prestamos
+                nombre_llegada = "deudas"
+                tabla_prob = []
+                tabla_resultados = []
+
+            elif i == 6:
                 media = 0
                 nombre_llegada = "interrupcion"
                 tabla_prob = [0.2, 0.8, 1]
@@ -148,6 +157,11 @@ class Simulacion:
                 cant_serv = 2
                 tasa_rendim = 4
             elif i == 5:
+                nombre_fin = "deudas"
+                cant_serv = 1
+                tasa_rendim = 3
+
+            elif i == 6:
                 nombre_fin = "interrupcion"
                 cant_serv = 1
                 tasa_rendim = 0
@@ -174,7 +188,11 @@ class Simulacion:
                 pos=3
             elif i == 4:
                 
-                nombre_llegada = "prestamos"
+                nombre_servicio = "prestamos"
+                pos=4
+            elif i == 5:
+                
+                nombre_servicio = "deudas"
                 pos=4
 
             self.v_acumuladores[i] = Acumulador(nombre_servicio, pos)
@@ -193,7 +211,7 @@ class Simulacion:
         ventana.pack(fill=BOTH, expand=True)
         
         columns = ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9","col10","col11","col12","col13","col14","col15", "col16", "col17", "col18"]
-        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 17+ max_cli + 7)):
+        for i in range((cantidad_cajeros+ cantidad_cajeros*2+ 17+ max_cli + 17)):
             columns.append(f'col{19+i}')
 
         grilla = ttk.Treeview(ventana, columns=columns, show="headings")
@@ -217,7 +235,7 @@ class Simulacion:
         # Configurar encabezados de las columnas
         encabezados = [
             "Nro Evento", "Evento", "Reloj(horas)", "Proxima llegada caja", "Proxima at personalizada",
-            "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos",
+            "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos", "Proxima llegada deudas",
             "Proxima llegada de corte"
         ]
         for i in range(cantidad_cajeros):
@@ -225,7 +243,7 @@ class Simulacion:
 
         encabezados += [
             "fin atencion personalizada 1", "fin atencion personalizada 2", "fin atencion personalizada 3",
-            "fin tarjeta credito 1", "fin tarjeta credito 2", "fin plazo fijo", "fin prestamos 1", "fin prestamos 2",
+            "fin tarjeta credito 1", "fin tarjeta credito 2", "fin plazo fijo", "fin prestamos 1", "fin prestamos 2", "fin deudas",
             "fin interrupcion"
         ]
 
@@ -236,7 +254,7 @@ class Simulacion:
             "cola caja", "estado atencion personalizada 1", "estado atencion personalizada 2",
             "estado atencion personalizada 3", "cola atencion personalizada", "estado tarjeta credito 1",
             "estado tarjeta credito 2", "cola tarjeta credito", "estado plazo fijo", "cola plazo fijo",
-            "estado prestamos 1", "estado prestamos 2", "cola prestamos"
+            "estado prestamos 1", "estado prestamos 2", "cola prestamos", "estado deudas", "cola deudas"
         ]
 
         for i in range(len(self.v_acumuladores)):
@@ -250,6 +268,9 @@ class Simulacion:
                 encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 4: # prestamos
                 encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+            if i == 5: # deudas
+                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+
 
         for i in range(max_cli):
             encabezados.append(f"E Cliente{i + 1}")
@@ -301,7 +322,7 @@ class Simulacion:
 
 
     def ejecutarInterrupcion(self, tipo_servicio):
-        for j in range(5):
+        for j in range(6):
             for i in self.lista_servidores[j]:
                 self.listaServidoresInt.append(i.getEstado())
                 i.setEstadoInterrumpido()
@@ -309,7 +330,7 @@ class Simulacion:
         self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, tipo_servicio)
         self.finInt = self.lista_fines[tipo_servicio].v_prox_fin[0]
         z = 0
-        for k in range(5):
+        for k in range(6):
             tamaño = self.lista_fines[k].cantidad_servidores
             self.lista_llegadas[k].prox_llegada = round(self.lista_llegadas[k].prox_llegada + \
                                                         (self.finInt - self.inicioInt), 2)
@@ -326,7 +347,7 @@ class Simulacion:
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
         self.reloj = objeto_llegada.prox_llegada
         self.cant_eventos_sucedidos += 1
-        if tipo_servicio == 5:
+        if tipo_servicio == 6:
             self.inicioInt = self.reloj
             self.ejecutarInterrupcion(tipo_servicio)
         else:
@@ -354,7 +375,7 @@ class Simulacion:
 
     def setearInterrumpido(self):
         h = 0
-        for j in range(5):
+        for j in range(6):
             i = len(self.lista_servidores[j])
             for z in range(i):
                 self.lista_servidores[j][z].estado = self.listaServidoresInt[h]
@@ -364,7 +385,7 @@ class Simulacion:
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
         self.cant_eventos_sucedidos += 1
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
-        if tipo_servicio == 5:
+        if tipo_servicio == 6:
             self.setearInterrumpido()
             self.listaServidoresInt = []
             objeto_fin.v_prox_fin[0] = None
