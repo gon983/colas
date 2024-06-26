@@ -40,7 +40,8 @@ def llamar_TP():
                 and int(linea_hasta) >= 0 \
                 and int(tasa_servicio_caja) > 0\
                 and int(tiempo_simulacion) >= 0\
-                and int(clientes) > 0:
+                and int(clientes) > 0\
+                and int(linea_desde) < int(linea_hasta):
 
             iniciar_simulacion(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
                     int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(linea_desde), int(linea_hasta), int(tasa_servicio_caja), int(clientes)) # Aca llama al iniciar_simulacion
