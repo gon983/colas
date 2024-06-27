@@ -17,7 +17,7 @@ class Llegada:
         if self.media != 0:
             t_entre_llegadas = main.generarNumeroExponencial(self.media)
         else:
-            t_entre_llegadas = main.generarTiempoCorte(self.tabla_tiempos, self.tabla_prob, horaActual)
+            t_entre_llegadas = main.generarTiempoCorte(self.tabla_tiempos, self.tabla_prob)
         self.prox_llegada = round(horaActual + t_entre_llegadas, 2)
 
     

@@ -18,10 +18,16 @@ class Cliente:
         if nro == 3:
             self.estado = 'siendoAtendido_plazo_fijo'
         if nro == 4:
-            self.estado = 'siendoAtendido_prestamos'
+            self.estado = 'siendoAtendido_prestamos'  
+        if nro == 5:
+            self.estado = 'siendoAtendido_deudas'  
 
         self.tiempo_espera = hora_actual - self.tiempo_inicio_espera
-
+    
+    def estaEnCola(self):
+        e = self.estado.split("_")
+        return e[0] == 'enCola'
+    
     def setTiempoFin(self, hora_fin):
         self.tiempo_fin_atencion = hora_fin
     def setEstadoEnCola(self):
@@ -33,8 +39,10 @@ class Cliente:
     def get_tiempo_espera(self):
         return self.tiempo_espera
 
-    def setEstadoNone(self):
-        self.estado = None
+    def quitarDelSistema(self):
+        self.estado = ""
+        self.tipo_servicio_demandado = -1
+        self.servidor_asignado = None
 
     
 

@@ -91,7 +91,7 @@ nombrecantidad_cajeros_cph.grid(row=6, column=0, sticky="e")
 cuadrocantidad_cajeros_cph=Entry(ventana, font=("Arial bold", 13))
 cuadrocantidad_cajeros_cph.grid(row=6,column=1)
 
-nombretiempo_simulacion=Label(ventana, text="Duracion de la simulacion:", font=("Arial bold", 13), background=back, anchor='e')
+nombretiempo_simulacion=Label(ventana, text="Duracion de la simulacion (en horas):", font=("Arial bold", 13), background=back, anchor='e')
 nombretiempo_simulacion.grid(row=7, column=0, sticky="e")
 cuadrotiempo_simulacion=Entry(ventana, font=("Arial bold", 13))
 cuadrotiempo_simulacion.grid(row=7, column=1)

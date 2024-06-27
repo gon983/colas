@@ -6,7 +6,7 @@ from tkinter import ttk
 
 def generar_Tabla(hora_corte):
     i = 0
-    h=0.1
+    h=0.01
     C=hora_corte
     t = 0
     tabla = []

@@ -25,7 +25,8 @@ class Simulacion:
         self.colas = [0, 0, 0, 0, 0,0]
         self.inicioInt = 0
         self.finInt = 0
-        self.listaServidoresInt = []
+        self.estados_serv_antes_corte = []
+        self.servicio_con_cortes = 0 #el servicio de caja es el que tiene problemas de luz
 
         # 1 acumulador por servicio 
         self.v_acumuladores = [None,None,None,None,None,None]
@@ -76,8 +77,9 @@ class Simulacion:
             v_3.append(round(sum(servidor.get_tiempo_ocio() for servidor in self.lista_servidores[i]),2))
 
         if len(self.v_clientes)>0:
-            for i in range(len(self.v_clientes)):
-                v_3.append(self.v_clientes[i].estado) # solo agrega el estado para simplificar en la interfaz
+            for cliente in self.v_clientes:
+                v_3.append(cliente.estado) # solo agrega el estado para simplificar en la interfaz
+                
             
         v_retornar = v_inicial + v_final + v_3
 
@@ -322,26 +324,25 @@ class Simulacion:
 
 
     def ejecutarInterrupcion(self, tipo_servicio):
-        for j in range(6):
-            for i in self.lista_servidores[j]:
-                self.listaServidoresInt.append(i.getEstado())
-                i.setEstadoInterrumpido()
-
+        
+        for serv in self.lista_servidores[self.servicio_con_cortes]:
+            self.estados_serv_antes_corte.append(serv.getEstado())
+            serv.setEstadoInterrumpido()
+            
+        # se genera la proxima interrupcion
         self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, tipo_servicio)
+        # se establece el fin de la interrupcion actual
         self.finInt = self.lista_fines[tipo_servicio].v_prox_fin[0]
+        
+        tamaño = self.lista_fines[self.servicio_con_cortes].cantidad_servidores
         z = 0
-        for k in range(6):
-            tamaño = self.lista_fines[k].cantidad_servidores
-            self.lista_llegadas[k].prox_llegada = round(self.lista_llegadas[k].prox_llegada + \
+        while z < tamaño:
+            if self.lista_fines[self.servicio_con_cortes].v_prox_fin[z] is not None:
+                self.lista_fines[self.servicio_con_cortes].v_prox_fin[z] = round(self.lista_fines[self.servicio_con_cortes].v_prox_fin[z] + \
                                                         (self.finInt - self.inicioInt), 2)
-            while z < tamaño:
-                if self.lista_fines[k].v_prox_fin[z] is not None:
-                    self.lista_fines[k].v_prox_fin[z] = round(self.lista_fines[k].v_prox_fin[z] + \
-                                                            (self.finInt - self.inicioInt), 2)
-                else:
-                    pass
-                z = z + 1
-            z = 0
+            else:
+                pass
+            z = z + 1
 
     # ejecuta todas las acciones que deben suceder al haber una llegada.
     def ejecutar_proxima_llegada(self, objeto_llegada, tipo_servicio):
@@ -374,12 +375,9 @@ class Simulacion:
         objeto_llegada.generar_prox_Llegada(self.reloj)
 
     def setearInterrumpido(self):
-        h = 0
-        for j in range(6):
-            i = len(self.lista_servidores[j])
-            for z in range(i):
-                self.lista_servidores[j][z].estado = self.listaServidoresInt[h]
-                h = h + 1
+        for serv in self.lista_servidores[self.servicio_con_cortes]:
+            serv.estado = self.estados_serv_antes_corte[serv.nro]
+
 
     # ejecuta todas las acciones que deben suceder al haber un fin de atencion.
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
@@ -387,16 +385,25 @@ class Simulacion:
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
         if tipo_servicio == 6:
             self.setearInterrumpido()
-            self.listaServidoresInt = []
+            self.estados_serv_antes_corte = []
             objeto_fin.v_prox_fin[0] = None
 
         else:
-            self.reloj = objeto_fin.v_prox_fin[nro_servidor]
+            # "sacamos" al cliente del sistema y establecemos el tiempo en el que termino de ser atendido
+            for cliente in self.v_clientes:
+                # primero hay que validar que el cliente este siendo atendido, y luego que el servidor que lo esta atendiendo sea el mismo que el que termino su servicio.
+                if cliente.servidor_asignado and cliente.tipo_servicio_demandado == tipo_servicio and cliente.servidor_asignado.nro == nro_servidor:
+                    cliente.setTiempoFin(self.reloj)
+                    cliente.quitarDelSistema()
+                    break
+                    
+            # luego, verificamos la cola
             if self.colas[tipo_servicio] > 0:
                 # si hay clientes en cola, se genera un proximo fin, se le cambia el estado al cliente y se disminuye en uno la cola
                 objeto_fin.generar_prox_fin(self.reloj, nro_servidor)
                 for cliente in self.v_clientes:
-                    if cliente.tipo_servicio_demandado == tipo_servicio:
+                    #primero hay que verificar si el cliente esta en cola y luego si el servicio demandado es el que se libero
+                    if cliente.estaEnCola() and cliente.tipo_servicio_demandado == tipo_servicio:
                         cliente.setEstadoSiendoAtendido(self.reloj, cliente.tipo_servicio_demandado)
                         tiempo_espera = cliente.get_tiempo_espera()
                         self.v_acumuladores[tipo_servicio].acumular_espera(tiempo_espera)
@@ -407,14 +414,7 @@ class Simulacion:
                 # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
                 objeto_fin.v_prox_fin[nro_servidor] = None
                 self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre(self.reloj)
-                for cliente in self.v_clientes:
-                    if cliente.tipo_servicio_demandado == tipo_servicio:
-                        cliente.setEstadoNone()
-                        cliente.tipo_servicio_demandado = -1
-                        break
-
-
-
+                
 
 
     # def acumular_ocio(self, tiempo_pasado): 
@@ -450,12 +450,12 @@ class Simulacion:
         frame_acumuladores.pack(pady=10, padx=10)
         for acumulador in resumen_acumuladores:
             nombre, tiempo_espera, cantidad_clientes, tiempo_ocio_promedio = acumulador
-            Label(frame_acumuladores, text=f"{nombre}:").pack(anchor='w')
+            Label(frame_acumuladores, text=f"{nombre.upper()}:").pack(anchor='w')
             if cantidad_clientes > 0:
-                Label(frame_acumuladores, text=f"Tiempo de espera promedio: {round(tiempo_espera / cantidad_clientes, 2)}").pack(
+                Label(frame_acumuladores, text=f"- Tiempo de espera promedio: {round(tiempo_espera / cantidad_clientes, 2)}").pack(
                     anchor='w')
             if tiempo_ocio_promedio > 0:
                 Label(frame_acumuladores,
-                      text=f"Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
+                      text=f"- Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
                     anchor='w')
 
