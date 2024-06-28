@@ -28,6 +28,7 @@ class Simulacion:
         self.finInt = 0
         self.estados_serv_antes_corte = []
         self.servicio_con_cortes = 0 #el servicio de caja es el que tiene problemas de luz
+        self.contador_clientes_que_se_fueron = 0
 
         # 1 acumulador por servicio 
         self.v_acumuladores = [None,None,None,None,None,None]
@@ -76,6 +77,9 @@ class Simulacion:
             v_3.append(self.v_acumuladores[i].get_tiempo_espera())
             v_3.append(self.v_acumuladores[i].get_cantidad_clientes_esperaron())
             v_3.append(round(sum(servidor.get_tiempo_ocio() for servidor in self.lista_servidores[i]),2))
+
+        v_3.append(self.contador_clientes_que_se_fueron)
+        ####################### aca agregar el contrador nuevo 
 
         if len(self.v_clientes)>0:
             for cliente in self.v_clientes:
@@ -310,10 +314,7 @@ class Simulacion:
     def buscar_proximo_evento(self):
 
         # busca la proxima llegada
-        tipo_llegada, objeto_prox_lleg = min(
-    ((idx, llegada) for idx, llegada in enumerate(self.lista_llegadas) if llegada != ''),
-    key=lambda llegadaX: llegadaX[1].prox_llegada
-)
+        tipo_llegada, objeto_prox_lleg = min(((idx, llegada) for idx, llegada in enumerate(self.lista_llegadas) if llegada != ''),key=lambda llegadaX: llegadaX[1].prox_llegada)
         # busca el proximo fin
         prox_fin = float('inf')
         tipo_fin = -1
@@ -399,8 +400,19 @@ class Simulacion:
 
                 else:
                     # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
-                    nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
-                    self.colas[tipo_servicio] += 1
+                    
+                    if tipo_servicio == 0 and self.get_cantidad_cola_caja() >= 5:
+                        #print(f'tipo servicio> {tipo_servicio}')
+                        #print(f'cola caja> {self.get_cantidad_cola_caja()}')
+                        #print(f'self.colas[tipo_servicio] > {self.colas[tipo_servicio]}')
+                        self.contar_cliente_que_se_va()
+                        #print(self.get_contador_clientes_que_se_van())
+                        nuevo_cliente = Cliente("", self.reloj)             
+                    
+                    else:
+                        nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
+                        self.colas[tipo_servicio] += 1
+                        
 
                 # se le asigna al cliente cual fue el tipo de servicio que demando.
                 nuevo_cliente.tipo_servicio_demandado = tipo_servicio
@@ -496,4 +508,14 @@ class Simulacion:
                 Label(frame_acumuladores,
                       text=f"- Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
                     anchor='w')
+        Label(frame_acumuladores, text="Cantidad de Clientes que se fueron del sistema:".upper()).pack(anchor='w')
+        Label(frame_acumuladores, text=f"- Contador: {self.get_contador_clientes_que_se_van()}").pack(anchor='w')
 
+    def get_cantidad_cola_caja(self):
+        return self.colas[0]
+    
+    def get_contador_clientes_que_se_van(self):
+        return self.contador_clientes_que_se_fueron
+    
+    def contar_cliente_que_se_va(self):
+        self.contador_clientes_que_se_fueron += 1
