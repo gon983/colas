@@ -55,7 +55,7 @@ class Simulacion:
 
 
     # crea una tupla con todos los valores a insertar en una nueva fila de la grilla
-    def fila(self, nombre, cantidad_cajeros, van_a_deudas):
+    def fila(self, nombre, cantidad_cajeros, van_a_deudas, termine_y_voy_a_deudas):
         horas = int(self.reloj)
         minutos = int((self.reloj - horas) * 60)
         segundos = int((self.reloj - horas - minutos / 60) * 3600)
@@ -66,6 +66,7 @@ class Simulacion:
             v_inicial.append(x)
         
         v_final =  [self.lista_fines[1].v_prox_fin[0], self.lista_fines[1].v_prox_fin[1], self.lista_fines[1].v_prox_fin[2], self.lista_fines[2].v_prox_fin[0], self.lista_fines[2].v_prox_fin[1], self.lista_fines[3].v_prox_fin[0], self.lista_fines[4].v_prox_fin[0], self.lista_fines[4].v_prox_fin[1], self.lista_fines[5].v_prox_fin[0], self.lista_fines[6].v_prox_fin[0]]
+        v_final.append(termine_y_voy_a_deudas)
         
         for i in range(cantidad_cajeros):
             x = self.lista_servidores[0][i].getEstado()
@@ -259,7 +260,7 @@ class Simulacion:
         self.encabezados += [
             "fin atencion personalizada 1", "fin atencion personalizada 2", "fin atencion personalizada 3",
             "fin tarjeta credito 1", "fin tarjeta credito 2", "fin plazo fijo", "fin prestamos 1", "fin prestamos 2", "fin deudas",
-            "fin interrupcion"
+            "fin interrupcion", "Termine y voy a deudas"
         ]
 
         for i in range(cantidad_cajeros):
@@ -429,6 +430,7 @@ class Simulacion:
     def ejecutar_proximo_fin(self, objeto_fin, tipo_servicio, nro_servidor):
         self.cant_eventos_sucedidos += 1
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
+        termine_y_voy_a_deudas = False
         if tipo_servicio == 6:
             self.setearInterrumpido()
             self.estados_serv_antes_corte = []
@@ -439,10 +441,29 @@ class Simulacion:
             for cliente in self.v_clientes:
                 # primero hay que validar que el cliente este siendo atendido, y luego que el servidor que lo esta atendiendo sea el mismo que el que termino su servicio.
                 if cliente.servidor_asignado and cliente.tipo_servicio_demandado == tipo_servicio and cliente.servidor_asignado.nro == nro_servidor:
-                    print(f'Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
-                    cliente.setTiempoFin(self.reloj)
-                    cliente.quitarDelSistema()
-                    break
+                    if random.random() <= 0.33:
+                        termine_y_voy_a_deudas = True
+                    
+                    if termine_y_voy_a_deudas:
+                        servidor = self.buscar_servidor_disponible(5)
+                        if servidor is not None:
+                            cliente.setEstadoSiendoAtendido(self.reloj, 5)
+                            self.v_acumuladores[5].acumular_espera(0)
+                            cliente.asignar_servidor(servidor)
+                            servidor.setEstadoOcupado(self.reloj)
+                            self.lista_fines[5].generar_prox_fin(self.reloj, servidor.nro)
+                        else:
+                            cliente.setEstadoEnColaDeudas()
+                            self.colas[5] += 1
+                        return "SI"
+
+                    else:
+                        print(f'Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
+                        cliente.setTiempoFin(self.reloj)
+                        cliente.quitarDelSistema()
+                        break
+
+                    
                     
             # luego, verificamos la cola
             if self.colas[tipo_servicio] > 0:
