@@ -20,7 +20,7 @@ class Fin:
     def generar_prox_fin(self, horaActual, nroServidor):
         if nroServidor == 6:
             # en el caso de que las interrupciones, se manejan con RK. se considera que t=1 son 30seg, es decir 0.5 min
-            t_entre_fines, tabla = RK.generar_Tabla(horaActual)
+            t_entre_fines, tabla = RK.generar_Tabla(horaActual, self.rendimiento_medio)
             self.v_prox_fin[0] = main.truncate(horaActual + (t_entre_fines * 30), 2)
 
         else:

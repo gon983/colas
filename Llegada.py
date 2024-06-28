@@ -14,10 +14,10 @@ class Llegada:
     
     # Otros métodos de la clase
     def generar_prox_Llegada(self, horaActual):
-        if self.media != 0:
+        if self.nombre != "interrupcion":
             t_entre_llegadas = main.generarNumeroExponencial(self.media)
         else:
-            t_entre_llegadas = main.generarTiempoCorte(self.tabla_tiempos, self.tabla_prob)
+            t_entre_llegadas = main.generarTiempoCorte(self.tabla_tiempos, self.tabla_prob, self.media)
         self.prox_llegada = round(horaActual + t_entre_llegadas, 2)
 
     

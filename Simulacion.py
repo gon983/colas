@@ -89,7 +89,7 @@ class Simulacion:
     # crea todos los objetos que van a ser necesarios para la simulacion y le asigna valores de inicializacion
     def inicializacion(self, media_caja, media_atencion_personalizada, media_tarjeta_credito, media_plazo_fijo, media_prestamos,
                     cantidad_cajas, tasa_servicio_cajas):
-        
+        lista = [media_caja, media_atencion_personalizada, media_tarjeta_credito, media_plazo_fijo, media_prestamos]
         nombre_llegada = ""
         media = 0
         tabla_prob = []
@@ -128,7 +128,7 @@ class Simulacion:
             #     tabla_resultados = []
 
             elif i == 6:
-                media = 0
+                media = len(lista)/sum(lista)
                 nombre_llegada = "interrupcion"
                 tabla_prob = [0.2, 0.8, 1]
                 tabla_resultados = [4, 6, 8]
@@ -171,7 +171,7 @@ class Simulacion:
             elif i == 6:
                 nombre_fin = "interrupcion"
                 cant_serv = 1
-                tasa_rendim = 0
+                tasa_rendim = len(lista)/sum(lista)
 
             
             self.lista_fines[i] =  Fin(nombre_fin, cant_serv, tasa_rendim)
@@ -333,7 +333,7 @@ class Simulacion:
 
 
     def ejecutarInterrupcion(self, tipo_servicio):
-        
+        self.servicio_con_cortes = random.randint(0, 5)
         for serv in self.lista_servidores[self.servicio_con_cortes]:
             self.estados_serv_antes_corte.append(serv.getEstado())
             serv.setEstadoInterrumpido()

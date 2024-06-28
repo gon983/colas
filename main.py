@@ -26,13 +26,14 @@ def generarNumeroExponencial(media):
 #                 break
 #     return t
 
-def generarTiempoCorte(tabla1, tabla2):
+def generarTiempoCorte(tabla1, tabla2, prom):
     r = truncate(random.random(), 2)
     t = 0
-    t_provisto = 0.3
+    t_provisto = prom
     for i in tabla2:
         if r < i:
             t = tabla1[tabla2.index(i)] * t_provisto
+
             break
     return t
 
@@ -43,7 +44,7 @@ def truncate(number: float, max_decimals: int) -> float:
 
 
 def mostrarRK(tablota):
-    i = 0
+
     raiz = Tk()
     raiz.title("Grupo F - TP5 - RK Colas")
 
@@ -76,13 +77,16 @@ def mostrarRK(tablota):
         grilla.heading("col5", text="K4")
         grilla.heading("col6", text="C(t+1)")
         grilla.heading("col7", text="t+1")
+        i = 0
         while i != len(j):
             grilla.insert("", END, text=j[i][0], values=(j[i][1], j[i][2], j[i][3], j[i][4],
                                                              j[i][5], j[i][6], j[i][7]))
+
             i = i + 1
         #scroll_y = Scrollbar(ventana, orient="vertical", command=grilla.yview)
         #scroll_y.pack(side="right", fill="y")
         #grilla.configure(yscrollcommand=scroll_y.set)
+
 
         grilla.pack(fill="both", expand=True)
     raiz.mainloop()
@@ -90,6 +94,7 @@ def mostrarRK(tablota):
 
 def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta, tasa_servicio_cajas, clientes):
     tablota = []
+    lista = [caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph]
     simulacion = Simulacion(cantidad_cajeros)
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                             prestamos_cph, cantidad_cajeros,tasa_servicio_cajas)
@@ -110,7 +115,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             if nro_servidor == -1:
                 if tipo_servicio == 6:
                     nombre_evento = "llegada_interrupcion"
-                    t, tablita = RK.generar_Tabla(tiempo_actual_simulacion)
+                    t, tablita = RK.generar_Tabla(tiempo_actual_simulacion, len(lista)/sum(lista))
                     tablota.append(tablita)
                 else:
                     nombre_evento = "llegada_cliente_" + proximo_evento.nombre
