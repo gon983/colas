@@ -286,7 +286,7 @@ class Simulacion:
                 self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 5: # deudas
                 self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
-        self.encabezados += ['Contador Clientes que se van']
+
         self.encabezados.append("Mayor concurrencia")
 
         for i in range(max_cli):
