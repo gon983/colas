@@ -33,6 +33,7 @@ class Simulacion:
         self.v_acumuladores = [None,None,None,None,None,None]
         self.mayor_concurrencia = 0
         self.contador_clientes_idos = 0
+        self.contador_clientes_que_se_fueron = 0
         # se carga la lista de servidores segun la cantidad de servidores especificados
         
         for i in range(cantidad_cajeros):
@@ -84,6 +85,8 @@ class Simulacion:
 
         self.mayor_concurrencia = max(len([ True for c in self.v_clientes if c.estado != "" ]), self.mayor_concurrencia)
         v_3.append(self.mayor_concurrencia)
+
+        v_3.append(self.contador_clientes_que_se_fueron)
 
         if len(self.v_clientes)>0:
             for cliente in self.v_clientes:
@@ -288,6 +291,7 @@ class Simulacion:
                 self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
 
         self.encabezados.append("Mayor concurrencia")
+        self.encabezados += ['Contador Clientes Que Se Van']
 
         for i in range(max_cli):
             self.encabezados.append(f"E Cliente{i + 1}")
@@ -408,9 +412,9 @@ class Simulacion:
                     self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
 
                 else:
-                    if self.colas[tipo_servicio] >= 5:
+                    if tipo_servicio == 0 and self.get_cantidad_cola_caja() >= 5:
                         nuevo_cliente = Cliente("", self.reloj)
-                        self.contarClientesIdos()
+                        self.contar_cliente_que_se_va()
                     else:
                     # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
                         nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
@@ -561,11 +565,20 @@ class Simulacion:
                       text=f"- Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
                     anchor='w')
         Label(frame_acumuladores, text=f"MAYOR CONCURRENCIA: {self.mayor_concurrencia}").pack(anchor='w')
-        Label(frame_acumuladores, text="Cantidad clientes idos del sistema:".upper()).pack(anchor='w')
-        Label(frame_acumuladores, text=f"Contador: {self.contador_clientes_idos}").pack(anchor='w')
+        Label(frame_acumuladores, text="Cantidad clientes que se fueron del sistema:".upper()).pack(anchor='w')
+        Label(frame_acumuladores, text=f"Contador: {self.get_contador_clientes_que_se_van()}").pack(anchor='w')
 
 
     def contarClientesIdos(self):
         self.contador_clientes_idos += 1
     def getContadorClientesIdos(self):
         return self.contador_clientes_idos
+
+    def get_cantidad_cola_caja(self):
+        return self.colas[0]
+
+    def get_contador_clientes_que_se_van(self):
+        return self.contador_clientes_que_se_fueron
+
+    def contar_cliente_que_se_va(self):
+        self.contador_clientes_que_se_fueron += 1
