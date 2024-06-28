@@ -31,8 +31,9 @@ class Cliente:
     def setTiempoFin(self, hora_fin):
         self.tiempo_fin_atencion = hora_fin
 
-    def setEstadoEnColaDeudas(self):
+    def setEstadoEnColaDeudas(self, reloj):
         self.estado = 'enCola_deudas'
+        self.tiempo_inicio_espera = reloj
     
     def asignar_servidor(self, servidor):
         self.servidor_asignado = servidor

@@ -431,6 +431,7 @@ class Simulacion:
         self.cant_eventos_sucedidos += 1
         self.reloj = objeto_fin.v_prox_fin[nro_servidor]
         termine_y_voy_a_deudas = False
+        rta = ''
         if tipo_servicio == 6:
             self.setearInterrumpido()
             self.estados_serv_antes_corte = []
@@ -441,8 +442,9 @@ class Simulacion:
             for cliente in self.v_clientes:
                 # primero hay que validar que el cliente este siendo atendido, y luego que el servidor que lo esta atendiendo sea el mismo que el que termino su servicio.
                 if cliente.servidor_asignado and cliente.tipo_servicio_demandado == tipo_servicio and cliente.servidor_asignado.nro == nro_servidor:
-                    if random.random() <= 0.33:
+                    if random.random() <= 0.33 and tipo_servicio != 5: #los clientes de deudas no recursan deudas
                         termine_y_voy_a_deudas = True
+                    # se puede dar que quede el random false 
                     
                     if termine_y_voy_a_deudas:
                         servidor = self.buscar_servidor_disponible(5)
@@ -453,11 +455,12 @@ class Simulacion:
                             servidor.setEstadoOcupado(self.reloj)
                             self.lista_fines[5].generar_prox_fin(self.reloj, servidor.nro)
                         else:
-                            cliente.setEstadoEnColaDeudas()
+                            cliente.setEstadoEnColaDeudas(self.reloj)
                             self.colas[5] += 1
-                        return "SI"
-
+                        
+                        rta = "SI"
                     else:
+                        rta= "NO"
                         print(f'Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
                         cliente.setTiempoFin(self.reloj)
                         cliente.quitarDelSistema()
@@ -483,6 +486,8 @@ class Simulacion:
                 # si no hay clientes en cola, se limpia el valor de proximo fin y se establece al servidor en libre
                 objeto_fin.v_prox_fin[nro_servidor] = None
                 self.lista_servidores[tipo_servicio][nro_servidor].setEstadoLibre(self.reloj)
+        return rta
+        
                 
 
 
