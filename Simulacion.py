@@ -358,7 +358,7 @@ class Simulacion:
         self.reloj = objeto_llegada.prox_llegada
         self.cant_eventos_sucedidos += 1
         van_a_deudas = False
-        
+
         if tipo_servicio == 6:
             self.inicioInt = self.reloj
             self.ejecutarInterrupcion(tipo_servicio)
@@ -380,9 +380,9 @@ class Simulacion:
                     self.lista_fines[5].generar_prox_fin(self.reloj, servidor.nro)
                 else:
                     nuevo_cliente = Cliente(f"enCola_deudas", self.reloj)
-                    self.colas[tipo_servicio] += 1
+                    self.colas[5] += 1
 
-                nuevo_cliente.tipo_servicio_demandado = tipo_servicio
+                nuevo_cliente.tipo_servicio_demandado = 5
                 self.v_clientes.append(nuevo_cliente)
             
             else:
