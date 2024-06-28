@@ -27,7 +27,7 @@ class Simulacion:
         self.finInt = 0
         self.estados_serv_antes_corte = []
         self.servicio_con_cortes = 0 #el servicio de caja es el que tiene problemas de luz
-
+        self.encabezados= None
         # 1 acumulador por servicio 
         self.v_acumuladores = [None,None,None,None,None,None]
         
@@ -202,7 +202,7 @@ class Simulacion:
 
 
     
-    # genera la grilla/tabla, especificando encabezados, scrolls y tamaños
+    # genera la grilla/tabla, especificando self.encabezados, scrolls y tamaños
     def generar_tabla(self, cantidad_cajeros, tupla_inicial, max_cli): #max cli indica cuantas columnas podemos tener
         i = 0
         raiz = Tk()
@@ -235,24 +235,24 @@ class Simulacion:
             else: grilla.column(col, width=150)
 
         # Configurar encabezados de las columnas
-        encabezados = [
+        self.encabezados = [
             "Nro Evento", "Evento", "Reloj(horas)", "Proxima llegada caja", "Proxima at personalizada",
             "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos", "Proxima llegada deudas",
             "Proxima llegada de corte"
         ]
         for i in range(cantidad_cajeros):
-            encabezados.append(f"fin caja {i+1}")
+            self.encabezados.append(f"fin caja {i+1}")
 
-        encabezados += [
+        self.encabezados += [
             "fin atencion personalizada 1", "fin atencion personalizada 2", "fin atencion personalizada 3",
             "fin tarjeta credito 1", "fin tarjeta credito 2", "fin plazo fijo", "fin prestamos 1", "fin prestamos 2", "fin deudas",
             "fin interrupcion"
         ]
 
         for i in range(cantidad_cajeros):
-            encabezados.append(f"estado caja {i}")
+            self.encabezados.append(f"estado caja {i}")
 
-        encabezados += [
+        self.encabezados += [
             "cola caja", "estado atencion personalizada 1", "estado atencion personalizada 2",
             "estado atencion personalizada 3", "cola atencion personalizada", "estado tarjeta credito 1",
             "estado tarjeta credito 2", "cola tarjeta credito", "estado plazo fijo", "cola plazo fijo",
@@ -261,23 +261,23 @@ class Simulacion:
 
         for i in range(len(self.v_acumuladores)):
             if i == 0: # caja
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(), 'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+                self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(), 'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 1: # at pers
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+                self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 2: # tarj credito
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+                self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 3: # plazo fijo
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+                self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 4: # prestamos
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+                self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
             if i == 5: # deudas
-                encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
+                self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
 
 
         for i in range(max_cli):
-            encabezados.append(f"E Cliente{i + 1}")
+            self.encabezados.append(f"E Cliente{i + 1}")
 
-        for col, encabezado in zip(columns, encabezados):
+        for col, encabezado in zip(columns, self.encabezados):
             grilla.heading(col, text=encabezado)
         
         grilla.pack(fill="both", expand=True)
@@ -393,6 +393,7 @@ class Simulacion:
             for cliente in self.v_clientes:
                 # primero hay que validar que el cliente este siendo atendido, y luego que el servidor que lo esta atendiendo sea el mismo que el que termino su servicio.
                 if cliente.servidor_asignado and cliente.tipo_servicio_demandado == tipo_servicio and cliente.servidor_asignado.nro == nro_servidor:
+                    print(f'Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
                     cliente.setTiempoFin(self.reloj)
                     cliente.quitarDelSistema()
                     break
@@ -405,6 +406,7 @@ class Simulacion:
                     #primero hay que verificar si el cliente esta en cola y luego si el servicio demandado es el que se libero
                     if cliente.estaEnCola() and cliente.tipo_servicio_demandado == tipo_servicio:
                         cliente.setEstadoSiendoAtendido(self.reloj, cliente.tipo_servicio_demandado)
+                        cliente.asignar_servidor(self.lista_servidores[tipo_servicio][nro_servidor])
                         tiempo_espera = cliente.get_tiempo_espera()
                         self.v_acumuladores[tipo_servicio].acumular_espera(tiempo_espera)
                         break
