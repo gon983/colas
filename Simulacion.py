@@ -408,9 +408,12 @@ class Simulacion:
                     self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
 
                 else:
+                    if tipo_servicio == 0 and self.colas[0] >= 5:
+                        nuevo_cliente = Cliente("", self.reloj)
+                    else:
                     # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
-                    nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
-                    self.colas[tipo_servicio] += 1
+                        nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
+                        self.colas[tipo_servicio] += 1
 
                 # se le asigna al cliente cual fue el tipo de servicio que demando.
                 nuevo_cliente.tipo_servicio_demandado = tipo_servicio
