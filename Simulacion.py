@@ -32,7 +32,7 @@ class Simulacion:
         # 1 acumulador por servicio 
         self.v_acumuladores = [None,None,None,None,None,None]
         self.mayor_concurrencia = 0
-        
+        self.contador_clientes_idos = 0
         # se carga la lista de servidores segun la cantidad de servidores especificados
         
         for i in range(cantidad_cajeros):
@@ -174,7 +174,7 @@ class Simulacion:
             elif i == 5:
                 nombre_fin = "deudas"
                 cant_serv = 1
-                tasa_rendim = 3
+                tasa_rendim = 50
 
             elif i == 6:
                 nombre_fin = "interrupcion"
@@ -408,8 +408,9 @@ class Simulacion:
                     self.lista_fines[tipo_servicio].generar_prox_fin(self.reloj, servidor.nro)
 
                 else:
-                    if tipo_servicio == 0 and self.colas[0] >= 5:
+                    if self.colas[tipo_servicio] >= 5:
                         nuevo_cliente = Cliente("", self.reloj)
+                        self.contarClientesIdos()
                     else:
                     # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
                         nuevo_cliente = Cliente(f"enCola_{objeto_llegada.nombre}", self.reloj)
@@ -446,7 +447,7 @@ class Simulacion:
             for cliente in self.v_clientes:
                 # primero hay que validar que el cliente este siendo atendido, y luego que el servidor que lo esta atendiendo sea el mismo que el que termino su servicio.
                 if cliente.servidor_asignado and cliente.tipo_servicio_demandado == tipo_servicio and cliente.servidor_asignado.nro == nro_servidor:
-                    print(f'1) Objeto Fin: {objeto_fin.nombre}, Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
+                    #print(f'1) Objeto Fin: {objeto_fin.nombre}, Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
           
                     if random.random() <= 0.33 and tipo_servicio != 5 and (not cliente.paso_por_deuda): #los clientes de deudas no recursan deudas
                         termine_y_voy_a_deudas = True
@@ -460,12 +461,13 @@ class Simulacion:
                             cliente.asignar_servidor(servidor)
                             servidor.setEstadoOcupado(self.reloj)
                             self.lista_fines[5].generar_prox_fin(self.reloj, servidor.nro)
-                            cliente.tipo_servicio_demandado = 5
-                            cliente.paso_por_deuda = True
+
                         else:
+                            cliente.servidor_asignado = None
                             cliente.setEstadoEnColaDeudas(self.reloj)
                             self.colas[5] += 1
-                        
+                        cliente.tipo_servicio_demandado = 5
+                        cliente.paso_por_deuda = True
                         rta = "SI"
                     else:
                         rta= "NO"
@@ -480,14 +482,13 @@ class Simulacion:
                                 cliente.paso_por_deuda = True
                                 servidor.setEstadoOcupado(self.reloj)
                                 self.lista_fines[cliente.tipo_servicio_demandado_original].generar_prox_fin(self.reloj, servidor.nro)
-
+                                cliente.tipo_servicio_demandado = cliente.tipo_servicio_demandado_original
                             else:
                                 # si no hay un servidor disponible, se crea un cliente con estado en cola, y se le suma uno mas a la cola del tipo de servicio.
                                 cliente.setEstadoEnCola(cliente.tipo_servicio_demandado_original)
                                 self.colas[cliente.tipo_servicio_demandado_original] += 1
-
+                                cliente.servidor_asignado = None
                             # se le asigna al cliente cual fue el tipo de servicio que demando.
-                            cliente.tipo_servicio_demandado = cliente.tipo_servicio_demandado_original
                         else:                        
                             #print(f'Tipo Servicio Dem: {cliente.tipo_servicio_demandado}, Estado: {cliente.estado}, servidor: {cliente.servidor_asignado.nro}')
                             cliente.setTiempoFin(self.reloj)
@@ -498,6 +499,7 @@ class Simulacion:
             if self.colas[tipo_servicio] > 0:
                 # si hay clientes en cola, se genera un proximo fin, se le cambia el estado al cliente y se disminuye en uno la cola
                 objeto_fin.generar_prox_fin(self.reloj, nro_servidor)
+
                 for cliente in self.v_clientes:
                     #primero hay que verificar si el cliente esta en cola y luego si el servicio demandado es el que se libero
                     if cliente.estaEnCola() and cliente.tipo_servicio_demandado == tipo_servicio:
@@ -559,4 +561,11 @@ class Simulacion:
                       text=f"- Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
                     anchor='w')
         Label(frame_acumuladores, text=f"MAYOR CONCURRENCIA: {self.mayor_concurrencia}").pack(anchor='w')
+        Label(frame_acumuladores, text="Cantidad clientes idos del sistema:".upper()).pack(anchor='w')
+        Label(frame_acumuladores, text=f"Contador: {self.contador_clientes_idos}").pack(anchor='w')
 
+
+    def contarClientesIdos(self):
+        self.contador_clientes_idos += 1
+    def getContadorClientesIdos(self):
+        return self.contador_clientes_idos

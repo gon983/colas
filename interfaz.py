@@ -28,7 +28,6 @@ def llamar_TP():
     linea_hasta = cuadrolinea_hasta.get()
     tiempo_simulacion = cuadrotiempo_simulacion.get()
     tasa_servicio_caja = cuadro_tasa_servicio_caja.get()
-    clientes = cuadro_cantidad_clientes.get()
     while True:
         if int(caja_cph) >= 0 \
                 and int(at_personalizada_cph) > 0 \
@@ -40,11 +39,10 @@ def llamar_TP():
                 and int(linea_hasta) >= 0 \
                 and int(tasa_servicio_caja) > 0\
                 and int(tiempo_simulacion) >= 0\
-                and int(clientes) > 0\
                 and int(linea_desde) < int(linea_hasta):
 
             iniciar_simulacion(int(caja_cph), int(at_personalizada_cph), int(tarj_credito_cph),
-                    int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(linea_desde), int(linea_hasta), int(tasa_servicio_caja), int(clientes)) # Aca llama al iniciar_simulacion
+                    int(plazo_fijo_cph), int(prestamos_cph), int(cantidad_cajeros_cph), int(tiempo_simulacion), int(linea_desde), int(linea_hasta), int(tasa_servicio_caja)) # Aca llama al iniciar_simulacion
             break
         else:
             Mensaje_Error("INGRESO INCORRECTO", "¡¡ERROR!!", False)
@@ -111,13 +109,8 @@ nombre_tasa_servicio_caja.grid(row=10, column=0, sticky="e")
 cuadro_tasa_servicio_caja=Entry(ventana, font=("Arial bold", 13))
 cuadro_tasa_servicio_caja.grid(row=10,column=1)
 
-nombre_cantidad_clientes=Label(ventana, text="Cantidad de clientes a mostrar:", font=("Arial bold", 13), background=back, anchor='e')
-nombre_cantidad_clientes.grid(row=11, column=0, sticky="e")
-cuadro_cantidad_clientes=Entry(ventana, font=("Arial bold", 13))
-cuadro_cantidad_clientes.grid(row=11,column=1)
-
 boton = Button(ventana, text="Aceptar", font=6, command=llamar_TP, width=8, background="#F5DA81")
-boton.grid(row=12, column=1)
+boton.grid(row=11, column=1)
 
 
 raiz.mainloop()

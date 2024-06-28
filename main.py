@@ -25,6 +25,19 @@ def generarNumeroExponencial(media):
 #                 t = tabla1[tabla2.index(i)] * tiempo
 #                 break
 #     return t
+def Mensaje_Error(mensaje, titulo, resultado):
+    raiz2 = Tk()
+    raiz2.title(titulo)
+    raiz2.geometry("800x50")
+
+    raiz2.resizable(width=False, height=False)
+    if resultado == True:
+        back2 = "green3"
+    else:
+        back2 = "red2"
+    raiz2.configure(background=back2)
+    nombreMensaje=Label(raiz2, text=mensaje, font=("Arial bold", 13), background=back2)
+    nombreMensaje.pack()
 
 def generarTiempoCorte(tabla1, tabla2, prom):
     r = truncate(random.random(), 2)
@@ -50,6 +63,7 @@ def mostrarRK(tablota):
 
     ventana = Frame(raiz)
     ventana.pack()
+
     barra = ttk.Scrollbar(raiz, orient="vertical")
     barra.pack(side="right", fill="y")
     for j in tablota:
@@ -92,16 +106,17 @@ def mostrarRK(tablota):
     raiz.mainloop()
 
 
-def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta, tasa_servicio_cajas, clientes):
-    tablota = []
+def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph, cantidad_cajeros, duracion_simulacion, linea_desde, linea_hasta, tasa_servicio_cajas):
     lista = [caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, prestamos_cph]
+    tablota = []
+    promedio_clientes = round((sum(lista)/len(lista)) * duracion_simulacion)
     simulacion = Simulacion(cantidad_cajeros)
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                             prestamos_cph, cantidad_cajeros,tasa_servicio_cajas)
     
     inicializacion = simulacion.fila("inicializacion",cantidad_cajeros,'','' )
             
-    simulacion.generar_tabla(cantidad_cajeros, inicializacion, clientes)
+    simulacion.generar_tabla(cantidad_cajeros, inicializacion, promedio_clientes)
 
     def actualizar_filas(tiempo_actual_simulacion):
         if tiempo_actual_simulacion <= duracion_simulacion:
@@ -149,7 +164,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
             simulacion.agregar_fila(fila_a_mostrar)
             if simulacion.cant_eventos_sucedidos < linea_hasta:
                 # aca se podria avisar al usuario que la simulacion termino antes que mostrar la linea
-                print("no se mostraron todas las lineas, la simulacion termino antes :)")
+                Mensaje_Error("no se mostraron todas las lineas, la simulacion termino antes :)", "¡¡Advertencia!!", True)
             resumen_acumuladores = simulacion.calcular_valores_acumuladores(cantidad_cajeros)
             simulacion.agregar_resumen_acumuladores(resumen_acumuladores)
             mostrarRK(tablota)
