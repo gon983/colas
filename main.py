@@ -94,15 +94,16 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
     simulacion.inicializacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_fijo_cph, 
                             prestamos_cph, cantidad_cajeros,tasa_servicio_cajas)
     
-    fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros )
+    fila_a_mostrar = simulacion.fila("inicializacion",cantidad_cajeros,'' )
             
     simulacion.generar_tabla(cantidad_cajeros,fila_a_mostrar, clientes)
     def actualizar_filas(tiempo_actual_simulacion):
+        
     
         if tiempo_actual_simulacion <= duracion_simulacion:
             nombre_evento = ""
             (proximo_evento, tipo_servicio, nro_servidor) = simulacion.buscar_proximo_evento()
-
+            van_a_deudas = ''
             #if simulacion.reloj > duracion_simulacion: return
             
             # si el nro de servidor es -1 implica que el proximo evento es una llegada. Caso contrario es un fin de atencion
@@ -113,7 +114,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
                     tablota.append(tablita)
                 else:
                     nombre_evento = "llegada_cliente_" + proximo_evento.nombre
-                simulacion.ejecutar_proxima_llegada(proximo_evento, tipo_servicio)
+                van_a_deudas = simulacion.ejecutar_proxima_llegada(proximo_evento, tipo_servicio)
 
             else:
                 if tipo_servicio == 6:
@@ -124,7 +125,7 @@ def iniciar_simulacion(caja_cph, at_personalizada_cph, tarj_credito_cph, plazo_f
 
 
             # genera una nueva fila de datos
-            fila_a_mostrar = simulacion.fila(nombre_evento, cantidad_cajeros)
+            fila_a_mostrar = simulacion.fila(nombre_evento, cantidad_cajeros, van_a_deudas)
             
             # agrega la fila generada a la grilla si cumple con la linea desde y hasta
             if linea_desde <= simulacion.cant_eventos_sucedidos <= linea_hasta:
