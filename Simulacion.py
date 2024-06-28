@@ -31,6 +31,7 @@ class Simulacion:
         self.encabezados= None
         # 1 acumulador por servicio 
         self.v_acumuladores = [None,None,None,None,None,None]
+        self.mayor_concurrencia = 0
         
         # se carga la lista de servidores segun la cantidad de servidores especificados
         
@@ -54,8 +55,11 @@ class Simulacion:
 
 
     # crea una tupla con todos los valores a insertar en una nueva fila de la grilla
-    def fila(self, nombre, cantidad_cajeros,van_a_deudas):
-        v_inicial = [self.cant_eventos_sucedidos, nombre, self.reloj, self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada, van_a_deudas, self.lista_llegadas[6].prox_llegada]
+    def fila(self, nombre, cantidad_cajeros, van_a_deudas):
+        horas = int(self.reloj)
+        minutos = int((self.reloj - horas) * 60)
+        segundos = int((self.reloj - horas - minutos / 60) * 3600)
+        v_inicial = [self.cant_eventos_sucedidos, nombre, f"{horas}:{minutos:02d}:{segundos:02d}", self.lista_llegadas[0].prox_llegada, self.lista_llegadas[1].prox_llegada, self.lista_llegadas[2].prox_llegada, self.lista_llegadas[3].prox_llegada, self.lista_llegadas[4].prox_llegada, van_a_deudas, self.lista_llegadas[6].prox_llegada]
         
         for i in range(cantidad_cajeros):
             x = self.lista_fines[0].v_prox_fin[i] 
@@ -76,6 +80,9 @@ class Simulacion:
             v_3.append(self.v_acumuladores[i].get_tiempo_espera())
             v_3.append(self.v_acumuladores[i].get_cantidad_clientes_esperaron())
             v_3.append(round(sum(servidor.get_tiempo_ocio() for servidor in self.lista_servidores[i]),2))
+
+        self.mayor_concurrencia = max(len([ True for c in self.v_clientes if c.estado != "" ]), self.mayor_concurrencia)
+        v_3.append(self.mayor_concurrencia)
 
         if len(self.v_clientes)>0:
             for cliente in self.v_clientes:
@@ -242,7 +249,7 @@ class Simulacion:
 
         # Configurar encabezados de las columnas
         self.encabezados = [
-            "Nro Evento", "Evento", "Reloj(horas)", "Proxima llegada caja", "Proxima at personalizada",
+            "Nro Evento", "Evento", "Reloj", "Proxima llegada caja", "Proxima at personalizada",
             "Proxima llegada tarjeta credito", "Proxima llegada plazo fijo", "Proxima llegada prestamos", "Me llamaron deudas",
             "Proxima llegada de corte"
         ]
@@ -279,6 +286,7 @@ class Simulacion:
             if i == 5: # deudas
                 self.encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
 
+        self.encabezados.append("Mayor concurrencia")
 
         for i in range(max_cli):
             self.encabezados.append(f"E Cliente{i + 1}")
@@ -498,4 +506,5 @@ class Simulacion:
                 Label(frame_acumuladores,
                       text=f"- Porcentaje Ocupacion: {round(((self.reloj - tiempo_ocio_promedio) / self.reloj) * 100, 2)}").pack(
                     anchor='w')
+        Label(frame_acumuladores, text=f"MAYOR CONCURRENCIA: {self.mayor_concurrencia}").pack(anchor='w')
 
