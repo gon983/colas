@@ -7,6 +7,7 @@ class Cliente:
         self.servidor_asignado = None
         self.tipo_servicio_demandado = -1
         self.tiempo_fin_atencion = 0
+        self.paso_por_deuda = False
     
     def setEstadoSiendoAtendido(self, hora_actual, nro):
         if nro == 0:
@@ -23,6 +24,20 @@ class Cliente:
             self.estado = 'siendoAtendido_deudas'  
 
         self.tiempo_espera = hora_actual - self.tiempo_inicio_espera
+ 
+    def setEstadoEnCola(self, nro):
+        if nro == 0:
+            self.estado = 'enCola_caja'
+        if nro == 1:
+            self.estado = 'enCola_atencion_personalizada'
+        if nro == 2:
+            self.estado = 'enCola_tarjeta_credito'
+        if nro == 3:
+            self.estado = 'enCola_plazo_fijo'
+        if nro == 4:
+            self.estado = 'enCola_prestamos'  
+        if nro == 5:
+            self.estado = 'enCola_deudas'  
     
     def estaEnCola(self):
         e = self.estado.split("_")
