@@ -79,7 +79,6 @@ class Simulacion:
             v_3.append(round(sum(servidor.get_tiempo_ocio() for servidor in self.lista_servidores[i]),2))
 
         v_3.append(self.contador_clientes_que_se_fueron)
-        ####################### aca agregar el contrador nuevo 
 
         if len(self.v_clientes)>0:
             for cliente in self.v_clientes:
@@ -283,6 +282,7 @@ class Simulacion:
             if i == 5: # deudas
                 encabezados += ['acum t '+ self.v_acumuladores[i].get_nombre_acumulador(),'acum c ' + self.v_acumuladores[i].get_nombre_acumulador(), 'acum ocio '+ self.v_acumuladores[i].get_nombre_acumulador()]
 
+        encabezados +=['Contador Clientes Que Se Van']
 
         for i in range(max_cli):
             encabezados.append(f"E Cliente{i + 1}")
